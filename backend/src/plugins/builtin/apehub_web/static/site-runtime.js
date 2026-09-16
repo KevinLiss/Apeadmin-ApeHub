@@ -94,6 +94,39 @@
         });
       }
     });
+
+    /* ---------- GitHub dropdown ---------- */
+    document.querySelectorAll('[data-gh-dropdown]').forEach(dd => {
+      const trigger = dd.querySelector('.gh-trigger');
+      if (!trigger) return;
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isOpen = dd.classList.contains('open');
+        document.querySelectorAll('[data-gh-dropdown]').forEach(other => {
+          if (other !== dd) other.classList.remove('open');
+        });
+        dd.classList.toggle('open', !isOpen);
+        trigger.setAttribute('aria-expanded', !isOpen);
+      });
+    });
+    document.addEventListener('click', (e) => {
+      document.querySelectorAll('[data-gh-dropdown]').forEach(dd => {
+        if (!dd.contains(e.target)) {
+          dd.classList.remove('open');
+          const trigger = dd.querySelector('.gh-trigger');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('[data-gh-dropdown]').forEach(dd => {
+          dd.classList.remove('open');
+          const trigger = dd.querySelector('.gh-trigger');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
   });
 
   /* ---------- Auth & Navigation ---------- */
@@ -163,6 +196,8 @@
       applyBlockContent(content);
       /* ---------- Dynamic section order & visibility (drag layout) ---------- */
       applyContentLayout(content);
+      /* ---------- Hero typing animation ---------- */
+      playHeroTyping();
     } catch (error) {
       console.warn('Apehub_web public configuration unavailable', error);
     }
@@ -316,4 +351,127 @@
       })();
     }
   });
+
+  /* ---------- Hero typing animation ---------- */
+  /**
+   * 首屏 Slogan 打字动画：
+   * - 解析 h1 的两行文本，逐字打出
+   * - 第一行普通色，第二行含 .grad 渐变高亮（打完纯文本后包裹渐变 span）
+   * - 打完后光标闪烁消失，副标题/按钮/统计行依次淡入
+   * - prefers-reduced-motion: 跳过动画直接显示
+   */
+  function playHeroTyping() {
+    const h1 = document.querySelector('.hero h1');
+    if (!h1 || h1.dataset.typed === 'done') return;
+    h1.dataset.typed = 'done';
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 提取两行文本 + grad 高亮区间
+    const gradEl = h1.querySelector('.grad');
+    const gradText = gradEl ? gradEl.textContent : '';
+    // 用占位符替换 grad 元素，保留其在文本流中的位置
+    if (gradEl) {
+      gradEl.replaceWith(document.createTextNode('\u0001' + gradText + '\u0001'));
+    }
+    const hasBr = h1.innerHTML.includes('<br');
+
+    // 按 <br> 拆成两行 raw HTML
+    let raw1, raw2;
+    if (hasBr) {
+      const brIdx = h1.innerHTML.indexOf('<br');
+      raw1 = h1.innerHTML.slice(0, brIdx);
+      raw2 = h1.innerHTML.slice(brIdx).replace(/<br[^>]*>/, '');
+    } else {
+      raw1 = h1.innerHTML;
+      raw2 = '';
+    }
+
+    function extractLine(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent;
+    }
+
+    let line1 = extractLine(raw1).trim();
+    let line2Full = extractLine(raw2).trim();
+    let line2Plain = line2Full;
+    let gradStart = -1;
+
+    if (gradText && line2Full.includes('\u0001')) {
+      gradStart = line2Full.indexOf('\u0001');
+      line2Plain = line2Full.replace(/\u0001/g, '');
+    }
+
+    function restore() {
+      if (gradText && line2Plain && gradStart >= 0) {
+        const before = line2Plain.slice(0, gradStart);
+        const after = line2Plain.slice(gradStart + gradText.length);
+        h1.innerHTML = line1 + '<br>' + before + '<span class="grad">' + gradText + '</span>' + after;
+      } else if (line2Plain) {
+        h1.innerHTML = line1 + '<br>' + line2Plain;
+      } else {
+        h1.textContent = line1;
+      }
+    }
+
+    function reveal() {
+      document.querySelector('.hero .sub')?.classList.add('show');
+      setTimeout(() => document.querySelector('.hero .cta')?.classList.add('show'), 150);
+      setTimeout(() => document.querySelector('.hero .stat-row')?.classList.add('show'), 300);
+    }
+
+    if (reduceMotion) { restore(); reveal(); return; }
+
+    const speed = 65, cursorBlinks = 3, cursorDur = 280;
+
+    h1.innerHTML = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    h1.appendChild(cursor);
+
+    function typeString(text, done) {
+      let i = 0;
+      (function step() {
+        if (i < text.length) {
+          cursor.insertAdjacentText('beforebegin', text[i]);
+          i++;
+          setTimeout(step, speed);
+        } else { done(); }
+      })();
+    }
+
+    function finish() {
+      let blinks = 0;
+      const t = setInterval(() => {
+        blinks++;
+        if (blinks >= cursorBlinks) {
+          clearInterval(t);
+          cursor.classList.add('hide');
+          reveal();
+        }
+      }, cursorDur);
+    }
+
+    typeString(line1, () => {
+      if (line2Plain) {
+        cursor.insertAdjacentHTML('beforebegin', '<br>');
+        typeString(line2Plain, () => {
+          if (gradText && gradStart >= 0) {
+            cursor.remove();
+            h1.innerHTML = h1.innerHTML.replace(gradText, '<span class="grad">' + gradText + '</span>');
+            h1.appendChild(cursor);
+          }
+          finish();
+        });
+      } else { finish(); }
+    });
+  }
+
+  // 兜底：若 API fetch 失败（catch 分支），DOM 仍触发动画
+  if (document.readyState !== 'loading') {
+    setTimeout(() => playHeroTyping(), 600);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(() => playHeroTyping(), 600));
+  }
 })();
