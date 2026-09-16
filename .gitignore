@@ -61,14 +61,8 @@ Thumbs.db
 desktop.ini
 
 # ========================================
-# Business plugins (developed & stored in a separate repo)
+# Business plugins (independently maintained)
 # ========================================
-backend/src/plugins/builtin/apehub_web/
-frontend/src/views/apehub_web/
-frontend/src/api/apehub_web.ts
-backend/tests/test_apehub_web_marketplace.py
-APEHUB_WEB_*.md
-
 # 独立建仓的业务插件：不在底座仓库维护，各自独立仓库
 backend/src/plugins/builtin/aimeeting/
 backend/src/plugins/builtin/ai_vision/
