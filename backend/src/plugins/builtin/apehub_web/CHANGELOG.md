@@ -3,15 +3,26 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: 'a1982496-012e-4b9f-be82-8e221507c4a8'
-  PropagateID: 'a1982496-012e-4b9f-be82-8e221507c4a8'
-  ReservedCode1: '09070c95-373a-447a-bb02-30b360b95d79'
-  ReservedCode2: '09070c95-373a-447a-bb02-30b360b95d79'
+  ProduceID: '234f73b8-9676-4bbc-8e4f-486aecd0752f'
+  PropagateID: '234f73b8-9676-4bbc-8e4f-486aecd0752f'
+  ReservedCode1: '228b0172-d36c-4d97-8de6-d97fec4d6358'
+  ReservedCode2: '228b0172-d36c-4d97-8de6-d97fec4d6358'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.13.0] — 2026-09-17
+
+### Added
+- 插件虚拟安装/下载数量功能：
+  - 新增 `virtual_download_count` / `virtual_install_count` 字段，后台可独立设置虚拟展示数量
+  - 前台公开接口展示合并数（真实 + 虚拟），不泄露虚拟字段明细
+  - 后台管理接口保留真实数与虚拟数分开返回，便于运营核对
+  - 前台插件列表按合并下载数排序
+  - 数据库迁移 v0020：plugin 增加 `virtual_download_count` / `virtual_install_count` 列
+- 后台插件编辑弹窗「基本信息」Tab 新增「虚拟展示数量」区域（含说明文字与实时合并数提示）
 
 ## [1.12.0] — 2026-09-16
 

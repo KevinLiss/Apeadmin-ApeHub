@@ -312,6 +312,9 @@ class ApehubWebPlugin(ApehubWebBase):
     status: Mapped[PluginStatus] = mapped_column(Enum(PluginStatus), default=PluginStatus.PENDING, index=True)
     download_count: Mapped[int] = mapped_column(Integer, default=0)
     install_count: Mapped[int] = mapped_column(Integer, default=0)
+    # 后台可设置的虚拟计数（冷启动展示用），前台展示时与真实计数合并
+    virtual_download_count: Mapped[int] = mapped_column(Integer, default=0)
+    virtual_install_count: Mapped[int] = mapped_column(Integer, default=0)
     rating_avg: Mapped[float] = mapped_column(Float, default=5.0)
     rating_count: Mapped[int] = mapped_column(Integer, default=0)
     reject_reason: Mapped[str] = mapped_column(String(500), default="")

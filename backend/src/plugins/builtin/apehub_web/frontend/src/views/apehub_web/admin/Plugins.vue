@@ -15,7 +15,7 @@
       <el-table-column prop="category" label="分类" width="100" />
       <el-table-column label="状态" width="100"><template #default="{ row }"><el-tag :type="statusType(row.status)">{{ statusLabel(row.status) }}</el-tag></template></el-table-column>
       <el-table-column label="购买" width="92"><template #default="{ row }">{{ row.metrics?.buyer_count || 0 }} 人<br /><small>{{ row.metrics?.paid_order_count || 0 }} 单</small></template></el-table-column>
-      <el-table-column label="安装" width="92"><template #default="{ row }">{{ row.metrics?.install_users || row.install_count || 0 }} 人<br /><small>{{ row.metrics?.download_total || row.download_count || 0 }} 次</small></template></el-table-column>
+      <el-table-column label="安装" width="92"><template #default="{ row }">{{ (row.metrics?.install_users || row.install_count || 0) + (row.virtual_install_count || 0) }} 人<br /><small>{{ (row.metrics?.download_total || row.download_count || 0) + (row.virtual_download_count || 0) }} 次<template v-if="row.virtual_install_count || row.virtual_download_count">（含虚拟）</template></small></template></el-table-column>
       <el-table-column label="操作" width="220" fixed="right"><template #default="{ row }">
         <el-button text type="primary" @click="openDetail(row)">详情</el-button>
         <el-button v-if="row.status === 'approved'" text type="warning" @click="offline(row)">下架</el-button>
@@ -32,7 +32,7 @@
       <el-descriptions-item label="名称">{{ detail.display_name }}</el-descriptions-item><el-descriptions-item label="版本">{{ detail.version }}</el-descriptions-item>
       <el-descriptions-item label="状态"><el-tag :type="statusType(detail.status)">{{ statusLabel(detail.status) }}</el-tag></el-descriptions-item><el-descriptions-item label="开发者">{{ detail.developer?.username || '-' }}</el-descriptions-item>
       <el-descriptions-item label="购买人数">{{ detail.metrics?.buyer_count || 0 }}</el-descriptions-item><el-descriptions-item label="成功订单">{{ detail.metrics?.paid_order_count || 0 }}</el-descriptions-item>
-      <el-descriptions-item label="安装人数">{{ detail.metrics?.install_users || detail.install_count || 0 }}</el-descriptions-item><el-descriptions-item label="下载次数">{{ detail.metrics?.download_total || detail.download_count || 0 }}</el-descriptions-item>
+      <el-descriptions-item label="安装人数">{{ (detail.metrics?.install_users || detail.install_count || 0) + (detail.virtual_install_count || 0) }}<template v-if="detail.virtual_install_count">（含虚拟）</template></el-descriptions-item><el-descriptions-item label="下载次数">{{ (detail.metrics?.download_total || detail.download_count || 0) + (detail.virtual_download_count || 0) }}<template v-if="detail.virtual_download_count">（含虚拟）</template></el-descriptions-item>
       <el-descriptions-item label="成交金额">{{ detail.metrics?.paid_amount || 0 }} USDT</el-descriptions-item><el-descriptions-item label="价格">{{ Number(detail.price) > 0 ? `${detail.price} USDT` : '免费' }}</el-descriptions-item>
       <el-descriptions-item label="平台服务费">{{ detail.service_fee_rate }}%</el-descriptions-item><el-descriptions-item label="当前上架版本">{{ detail.version }}</el-descriptions-item>
       <el-descriptions-item label="驳回原因" :span="2">{{ detail.reject_reason || '-' }}</el-descriptions-item><el-descriptions-item label="描述" :span="2">{{ detail.description || '-' }}</el-descriptions-item>

@@ -478,8 +478,17 @@ async def _settle_due_incomes(db: AsyncSession, user_id: int | None = None) -> i
     return len(incomes)
 
 
-def _plugin_summary(p: ApehubWebPlugin, with_demos: bool = False) -> dict[str, Any]:
-    """Serialize a plugin row for list/detail responses."""
+def _plugin_summary(p: ApehubWebPlugin, with_demos: bool = False, merge_virtual: bool = False) -> dict[str, Any]:
+    """Serialize a plugin row for list/detail responses.
+
+    merge_virtual=True 时对外展示合并计数（真实 + 虚拟）；后台管理视图保持
+    真实数与 virtual_* 字段分开返回，便于运营核对。
+    """
+    download_count = p.download_count or 0
+    install_count = p.install_count or 0
+    if merge_virtual:
+        download_count += p.virtual_download_count or 0
+        install_count += p.virtual_install_count or 0
     data: dict[str, Any] = {
         "id": p.id,
         "developer_id": p.developer_id,
@@ -496,8 +505,8 @@ def _plugin_summary(p: ApehubWebPlugin, with_demos: bool = False) -> dict[str, A
         "currency": "CNY",
         "service_fee_rate": _money(p.service_fee_rate),
         "status": p.status.value,
-        "download_count": p.download_count,
-        "install_count": p.install_count,
+        "download_count": download_count,
+        "install_count": install_count,
         "rating_avg": p.rating_avg,
         "rating_count": p.rating_count,
         "reject_reason": p.reject_reason,
@@ -505,6 +514,9 @@ def _plugin_summary(p: ApehubWebPlugin, with_demos: bool = False) -> dict[str, A
         "created_at": p.created_at.isoformat() if p.created_at else None,
         "updated_at": p.updated_at.isoformat() if p.updated_at else None,
     }
+    if not merge_virtual:
+        data["virtual_download_count"] = p.virtual_download_count or 0
+        data["virtual_install_count"] = p.virtual_install_count or 0
     if with_demos:
         data["demos"] = [
             {
@@ -1260,9 +1272,12 @@ async def public_plugins(
         stmt = stmt.where(or_(ApehubWebPlugin.display_name.like(like), ApehubWebPlugin.description.like(like), ApehubWebPlugin.tags.like(like)))
     count_stmt = select(func.count()).select_from(stmt.subquery())
     total = (await db.execute(count_stmt)).scalar() or 0
-    stmt = stmt.order_by(ApehubWebPlugin.download_count.desc(), ApehubWebPlugin.id.desc()).offset((page - 1) * page_size).limit(page_size)
+    stmt = stmt.order_by(
+        (ApehubWebPlugin.download_count + ApehubWebPlugin.virtual_download_count).desc(),
+        ApehubWebPlugin.id.desc(),
+    ).offset((page - 1) * page_size).limit(page_size)
     result = await db.execute(stmt)
-    items = [_plugin_summary(p) for p in result.scalars().all()]
+    items = [_plugin_summary(p, merge_virtual=True) for p in result.scalars().all()]
     return success_response(data={"total": total, "page": page, "page_size": page_size, "items": items})
 
 
@@ -1294,7 +1309,7 @@ async def public_plugin_detail(plugin_id: int, db: Annotated[AsyncSession, Depen
     plugin = await db.get(ApehubWebPlugin, plugin_id)
     if not plugin or plugin.status != PluginStatus.APPROVED:
         raise NotFoundException("插件不存在或未上架")
-    data = _plugin_summary(plugin, with_demos=True)
+    data = _plugin_summary(plugin, with_demos=True, merge_virtual=True)
     # File metadata (no download path leak for paid plugins)
     data["files"] = [
         {"id": f.id, "file_type": f.file_type, "filename": f.filename, "size": f.size}
@@ -1360,13 +1375,13 @@ async def my_plugins(
     result = await db.execute(
         select(ApehubWebPlugin).where(ApehubWebPlugin.developer_id == user.id).order_by(ApehubWebPlugin.id.desc())
     )
-    return success_response(data=[_plugin_summary(p) for p in result.scalars().all()])
+    return success_response(data=[_plugin_summary(p, merge_virtual=True) for p in result.scalars().all()])
 
 
 @router.get("/developer/plugins/{plugin_id}")
 async def my_plugin_detail(plugin_id: int, db: Annotated[AsyncSession, Depends(get_db)], user: Annotated[User, Depends(get_current_user)]):
     plugin = await _owned_plugin(db, plugin_id, user.id)
-    data = _plugin_summary(plugin, with_demos=True)
+    data = _plugin_summary(plugin, with_demos=True, merge_virtual=True)
     data["versions"] = [_version_summary(version, include_report=True) for version in plugin.versions]
     data["files"] = [
         {"id": f.id, "file_type": f.file_type, "filename": f.filename, "size": f.size, "stored_path": f.stored_path}
@@ -3151,7 +3166,7 @@ async def my_paid_plugins(
         plugin = await db.get(ApehubWebPlugin, entitlement.plugin_id)
         if not plugin:
             continue
-        data = _plugin_summary(plugin)
+        data = _plugin_summary(plugin, merge_virtual=True)
         data["files"] = [
             {
                 "id": file.id,
