@@ -556,7 +556,7 @@
   <div class="container">
     <div class="ver-tag"><span class="dot"></span> 面向 AI 智能体场景的开源开发框架 · MIT License</div>
     <h1>让中后台管理，<br />为 <span class="grad">AI 智能体</span> 而生</h1>
-    <p class="sub">ApeAdmin 基于 FastAPI + Vue3 打造，跳出传统后台设计思路，原生为 AI Agent 能力调用做适配。开箱即用、可插拔扩展，帮开发者快速搭建兼具业务管理与 AI 工具输出能力的应用。</p>
+    <p class="sub">ApeAdmin 基于 Fastapi/Gin + Vue3 打造，跳出传统后台设计思路，原生为 AI Agent 能力调用做适配。开箱即用、可插拔扩展，帮开发者快速搭建兼具业务管理与 AI 工具输出能力的应用。</p>
     <div class="cta">
       <a class="btn btn-primary btn-lg" href="javascript:void(0)" id="heroLoginBtn">立即体验 →</a>
       <a class="btn btn-ghost btn-lg" href="/apehub-web/plugins.html">插件市场</a>
@@ -564,7 +564,7 @@
     </div>
     <div class="stat-row">
       <div class="stat"><div class="num">快速开发</div><div class="label">3 分钟跑起来，CLI 一键生成</div></div>
-      <div class="stat"><div class="num">专业架构</div><div class="label">FastAPI + Vue3 前后端分离</div></div>
+      <div class="stat"><div class="num">专业架构</div><div class="label">Fastapi/Gin + Vue3 前后端分离</div></div>
       <div class="stat"><div class="num">社区庞大</div><div class="label">插件市场持续沉淀生态</div></div>
       <div class="stat"><div class="num">适配 AI</div><div class="label">MCP 网关原生对接 Agent</div></div>
     </div>
@@ -595,7 +595,7 @@
       <div class="feature-card">
         <div class="icon ic-2">🧩</div>
         <h3>插件化架构</h3>
-        <p>插件以 Python 包开发，自动发现、热启用禁用、ZIP 一键安装，与底座完全解耦。</p>
+        <p>插件以 Python 包开发，自动发现、热启用禁用、ZIP 一键安装，与底座完全解耦。Go 版同样支持插件化扩展。</p>
         <div class="tags"><span class="tag">load→install→register</span><span class="tag">EventBus</span></div>
       </div>
       <div class="feature-card">
@@ -643,14 +643,14 @@
       <div class="arch-arrow">→</div>
       <div class="arch-node">
         <div class="a-ic">⚙️</div>
-        <h4>FastAPI 底座</h4>
+        <h4>FastAPI / Gin 底座</h4>
         <p>RBAC · 审计 · MCP 网关 · AI 对话 · 动态路由</p>
       </div>
       <div class="arch-arrow">→</div>
       <div class="arch-node">
         <div class="a-ic">🧩</div>
         <h4>业务插件</h4>
-        <p>独立 Python 包 · 事件总线 · 可热插拔</p>
+        <p>Python 包 / Go 模块 · 事件总线 · 可热插拔</p>
       </div>
     </div>
     <div class="arch-note">数据库：SQLite（开发零配置）↔ MySQL（生产）双驱动自动切换 · 缓存：Redis 缺失自动降级内存</div>
@@ -708,7 +708,7 @@
     <div class="stack-grid">
       <div class="stack-card">
         <h4><span class="s-ic">⚙️</span>后端</h4>
-        <div class="items"><span class="item">FastAPI</span><span class="item">SQLAlchemy 2.0 async</span><span class="item">Alembic</span></div>
+        <div class="items"><span class="item">FastAPI</span><span class="item">Gin</span><span class="item">SQLAlchemy 2.0</span><span class="item">GORM</span><span class="item">Alembic</span></div>
       </div>
       <div class="stack-card">
         <h4><span class="s-ic">🎨</span>前端</h4>
@@ -778,7 +778,7 @@
     </div>
     <div class="start-wrap">
       <div class="start-steps">
-        <div class="step"><div class="n">1</div><div><b>启动后端</b><p>Python 3.11+，创建虚拟环境后安装依赖，一行命令跑起 FastAPI。</p></div></div>
+        <div class="step"><div class="n">1</div><div><b>启动后端</b><p>Python 版需 Python 3.11+，Go 版需 Go 1.21+，一行命令跑起后端服务。</p></div></div>
         <div class="step"><div class="n">2</div><div><b>启动前端</b><p>Node.js 18+，npm install 后 npm run dev，访问 localhost:5173。</p></div></div>
         <div class="step"><div class="n">3</div><div><b>登录体验</b><p>使用默认账号 admin / admin123 登录，开始管理你的系统。</p></div></div>
       </div>
@@ -789,13 +789,18 @@
           <span class="cdot" style="background:#28c840"></span>
           <span class="fname">terminal</span>
         </div>
-        <pre><code><span class="c-c"># 后端</span>
+        <pre><code><span class="c-c"># Python 版后端</span>
 <span class="c-n">cd</span> backend
 python -m venv .venv && <span class="c-n">source</span> .venv/bin/activate
 pip install -e .
 uvicorn src.main:app --reload --port <span class="c-n">8000</span>
 
-<span class="c-c"># 前端</span>
+<span class="c-c"># Go 版后端</span>
+<span class="c-n">cd</span> apeadmin-gin
+go build -o apeadmin .
+./apeadmin
+
+<span class="c-c"># 前端（通用）</span>
 <span class="c-n">cd</span> frontend
 npm install --legacy-peer-deps
 npm run dev   <span class="c-c"># http://localhost:5173</span>
@@ -813,7 +818,7 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
       <h2>开始构建你的 AI 中后台</h2>
       <p>开源 · 免费 · 面向智能体场景，立即体验或给项目点个 Star。</p>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
-        <a class="btn btn-white btn-lg" href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">前往 GitHub ⭐</a>
+        <a class="btn btn-white btn-lg" href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">GitHub ⭐</a>
         <a class="btn btn-line btn-lg" href="#features">了解更多</a>
       </div>
     </div>
@@ -826,7 +831,7 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
     <div class="foot-grid">
       <div class="foot-brand">
         <div class="brand"><img src="/apehub-web/assets/logo.png" alt="ApeAdmin" /><span>ApeAdmin</span></div>
-        <p>面向 AI 智能体场景的开发框架。以 FastAPI 异步服务、Vue 3 管理界面、RBAC 与可控插件机制支撑持续交付。</p>
+        <p>面向 AI 智能体场景的开发框架。以 FastAPI/Gin 异步服务、Vue 3 管理界面、RBAC 与可控插件机制支撑持续交付。</p>
       </div>
       <div class="foot-col">
         <h5>产品</h5>
@@ -840,18 +845,20 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
         <a href="/apehub-web/docs-portal/">技术文档</a>
         <a href="/apehub-web/plugins.html">插件市场</a>
         <a href="#start">快速开始</a>
-        <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">GitHub 仓库</a>
+        <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">GitHub (Python)</a>
+        <a href="https://github.com/KevinLiss/ApeAdmin-Gin" target="_blank" rel="noopener">GitHub (Go)</a>
       </div>
       <div class="foot-col">
         <h5>社区</h5>
-        <a href="https://github.com/KevinLiss/ApeAdmin/issues" target="_blank" rel="noopener">提交 Issue</a>
+        <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">Python 版 Issue</a>
+        <a href="https://github.com/KevinLiss/ApeAdmin-Gin/issues" target="_blank" rel="noopener">Go 版 Issue</a>
         <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">Pull Request</a>
         <a href="https://github.com/KevinLiss/ApeAdmin/blob/master/LICENSE" target="_blank" rel="noopener">MIT License</a>
       </div>
     </div>
     <div class="foot-bottom">
       <span>© 2026 ApeAdmin · 面向 AI 智能体场景的开发框架</span>
-      <span>FastAPI · Vue 3 · SQLAlchemy 2.0</span>
+      <span>Fastapi/Gin · Vue 3 · SQLAlchemy · GORM</span>
     </div>
   </div>
 </footer>
