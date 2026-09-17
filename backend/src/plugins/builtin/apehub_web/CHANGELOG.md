@@ -3,15 +3,21 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '234f73b8-9676-4bbc-8e4f-486aecd0752f'
-  PropagateID: '234f73b8-9676-4bbc-8e4f-486aecd0752f'
-  ReservedCode1: '228b0172-d36c-4d97-8de6-d97fec4d6358'
-  ReservedCode2: '228b0172-d36c-4d97-8de6-d97fec4d6358'
+  ProduceID: '4ed500f3-2689-4709-9294-d46e4cb99178'
+  PropagateID: '4ed500f3-2689-4709-9294-d46e4cb99178'
+  ReservedCode1: 'ca4270ff-67f9-460c-9604-6da641ad48cc'
+  ReservedCode2: 'ca4270ff-67f9-460c-9604-6da641ad48cc'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.13.1] — 2026-09-17
+
+### Fixed
+- 修复开发者更新插件名称时 `name` 被覆盖为 slug 的 bug（API `/developer/plugins/{id}`）：改名时同步重算 slug 并校验唯一性（冲突返回 409）
+- 管理端虚拟计数/真实计数增加上限校验（`le=2_000_000_000`），防止灌入超大数值
 
 ## [1.13.0] — 2026-09-17
 
@@ -163,3 +169,5 @@ All notable changes to the ApeHub Web plugin are documented here.
 - 初始版本：产品首页、插件市场、技术文档、个人中心
 - 管理后台：站点配置、内容管理、文档管理
 - 迁移 v0001：全部初始表 + 种子数据
+
+> AI生成

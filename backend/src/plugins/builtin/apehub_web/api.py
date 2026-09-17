@@ -1409,8 +1409,14 @@ async def update_my_plugin(
         if k in {"demos", "version"}:
             continue
         if k in ("name",):
-            v = services.gen_slug(v)
-            plugin.slug = v
+            # 更新 name 时同步重算 slug（不覆盖 name 本身），并校验唯一性
+            new_slug = services.gen_slug(v)
+            existing = await db.execute(
+                select(ApehubWebPlugin).where(ApehubWebPlugin.slug == new_slug, ApehubWebPlugin.id != plugin_id)
+            )
+            if existing.scalar_one_or_none():
+                raise ConflictException("插件名称已存在，请更换")
+            plugin.slug = new_slug
         setattr(plugin, k, v)
     # Replace demos only when the caller explicitly sends the field.
     if "demos" in payload:

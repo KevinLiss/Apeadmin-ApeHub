@@ -373,10 +373,10 @@ class AdminPluginUpdateIn(BaseModel):
     price: Decimal | None = Field(default=None, ge=0)
     service_fee_rate: Decimal | None = Field(default=None, ge=0, le=100)
     status: str | None = None
-    download_count: int | None = Field(default=None, ge=0)
-    install_count: int | None = Field(default=None, ge=0)
-    virtual_download_count: int | None = Field(default=None, ge=0)
-    virtual_install_count: int | None = Field(default=None, ge=0)
+    download_count: int | None = Field(default=None, ge=0, le=2_000_000_000)
+    install_count: int | None = Field(default=None, ge=0, le=2_000_000_000)
+    virtual_download_count: int | None = Field(default=None, ge=0, le=2_000_000_000)
+    virtual_install_count: int | None = Field(default=None, ge=0, le=2_000_000_000)
     rating_avg: float | None = Field(default=None, ge=0, le=5)
     rating_count: int | None = Field(default=None, ge=0)
     developer_id: int | None = None
