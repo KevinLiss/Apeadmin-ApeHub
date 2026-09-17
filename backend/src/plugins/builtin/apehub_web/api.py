@@ -1273,7 +1273,7 @@ async def public_plugins(
     count_stmt = select(func.count()).select_from(stmt.subquery())
     total = (await db.execute(count_stmt)).scalar() or 0
     stmt = stmt.order_by(
-        (ApehubWebPlugin.download_count + ApehubWebPlugin.virtual_download_count).desc(),
+        (func.coalesce(ApehubWebPlugin.download_count, 0) + func.coalesce(ApehubWebPlugin.virtual_download_count, 0)).desc(),
         ApehubWebPlugin.id.desc(),
     ).offset((page - 1) * page_size).limit(page_size)
     result = await db.execute(stmt)
