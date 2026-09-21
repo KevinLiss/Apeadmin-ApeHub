@@ -121,7 +121,10 @@ function applyButtonConfig(plugin) {
   const demoBtn = document.getElementById('demoBtn');
   const buyBtn = document.getElementById('buyBtn');
   if (demoBtn) {
-    setEnabled(demoBtn.closest('div[style*="position"]') || demoBtn, demoCfg.enabled !== false);
+    // 显隐统一由 renderDemos 依据「是否配置了 Demo 数据」决定；这里只在配置明确关闭时隐藏
+    if (demoCfg.enabled === false) {
+      setEnabled(demoBtn.closest('div[style*="position"]') || demoBtn, false);
+    }
     if (demoCfg.label) demoBtn.innerHTML = detailEsc(demoCfg.label) + (demoCfg.dropdown !== false ? ' ▾' : '');
     if (demoCfg.style) demoBtn.className = `btn btn-${demoCfg.style} btn-lg`;
   }
@@ -229,8 +232,12 @@ function renderDemos(demos) {
   const dropdown = document.getElementById('demoDropdown');
   if (!dropdown) return;
   dropdown.innerHTML = demos.length ? demos.map(item => `<a href="${detailEsc(item.url || '#')}" target="${item.url ? '_blank' : '_self'}" rel="noopener">${detailEsc(item.title || item.demo_type)}</a>`).join('') : '<a href="#">暂无在线 Demo</a>';
+  // 无 Demo 数据时直接隐藏「立即体验」按钮及其外层定位容器，只保留下载/购买按钮
   const demoBtn = document.getElementById('demoBtn');
-  if (demoBtn) demoBtn.disabled = !demos.length;
+  if (demoBtn) {
+    const wrapper = demoBtn.closest('div[style*="position"]') || demoBtn;
+    setEnabled(wrapper, demos.length > 0 && (pageConfig.buttons?.demo?.enabled !== false));
+  }
 }
 
 function renderBuy(plugin, latest) {

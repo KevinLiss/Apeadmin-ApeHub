@@ -3,15 +3,24 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '5987dff0-ee7e-4ee4-b219-89cc4a40f72f'
-  PropagateID: '5987dff0-ee7e-4ee4-b219-89cc4a40f72f'
-  ReservedCode1: '04189809-fb7f-453a-8a28-d91a0d8e9fdf'
-  ReservedCode2: '04189809-fb7f-453a-8a28-d91a0d8e9fdf'
+  ProduceID: '82d3f662-714d-4317-9170-d9aeb486fe98'
+  PropagateID: '82d3f662-714d-4317-9170-d9aeb486fe98'
+  ReservedCode1: 'c2b3ce95-28d3-440d-a2e1-471f5b67a849'
+  ReservedCode2: 'c2b3ce95-28d3-440d-a2e1-471f5b67a849'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.17.0] — 2026-09-21
+
+### Fixed
+- 插件详情页「立即体验」按钮在无 Demo 数据时自动隐藏，只保留下载/购买按钮
+  - `renderDemos` 根据后端返回的 demos 数组控制按钮（含外层定位容器）显隐
+  - `applyButtonConfig` 不再无条件强制恢复显示，避免覆盖 renderDemos 的隐藏逻辑
+- 首页 CTA 区 GitHub 按钮变形修复：caret SVG 缺少 `width/height` 属性导致在 `flex-shrink:0` 下撑至 82×82px
+  - 统一使用与导航栏一致的 caret SVG（`width=12 height=12` 描边箭头）
 
 ## [1.16.0] — 2026-09-21
 
