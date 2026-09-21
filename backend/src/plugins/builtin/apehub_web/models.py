@@ -616,6 +616,8 @@ class ApehubWebRelease(ApehubWebBase):
     is_latest: Mapped[bool] = mapped_column(Boolean, default=False)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     download_count: Mapped[int] = mapped_column(Integer, default=0)
+    # 后台可设置的虚拟下载量（冷启动展示用），前台展示时与真实计数合并
+    virtual_download_count: Mapped[int] = mapped_column(Integer, default=0)
     published_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

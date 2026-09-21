@@ -4,7 +4,7 @@ from sqlalchemy import inspect, text
 
 from src.db.engine import Base, engine
 
-SCHEMA_VERSION = 20
+SCHEMA_VERSION = 21
 VERSION_TABLE = "apehub_web_schema_version"
 
 
@@ -160,3 +160,9 @@ async def apply_migrations() -> None:
             await upgrade_virtual_counts(connection)
             await connection.execute(text(f"INSERT INTO {VERSION_TABLE} (version) VALUES (20)"))
             current = 20
+        if current < 21:
+            from .v0021_release_virtual_download import upgrade_release_virtual_download
+
+            await upgrade_release_virtual_download(connection)
+            await connection.execute(text(f"INSERT INTO {VERSION_TABLE} (version) VALUES (21)"))
+            current = 21

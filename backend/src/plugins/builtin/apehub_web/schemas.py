@@ -416,4 +416,6 @@ class ReleaseUpdateIn(BaseModel):
     is_latest: bool | None = None
     enabled: bool | None = None
     published_at: str | None = None
+    # 后台可设置的虚拟下载量（前台与真实计数合并展示；上限与插件虚拟计数一致）
+    virtual_download_count: int | None = Field(default=None, ge=0, le=2_000_000_000)
 

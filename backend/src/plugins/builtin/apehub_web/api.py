@@ -3901,8 +3901,9 @@ def _parse_published_at(raw: str | None) -> datetime | None:
     return None
 
 
-def _release_summary(release: ApehubWebRelease) -> dict[str, Any]:
-    return {
+def _release_summary(release: ApehubWebRelease, merge_virtual: bool = False) -> dict:
+    """Release summary. merge_virtual=True（公开接口）时下载量合并虚拟数且不泄露 virtual 字段。"""
+    data = {
         "id": release.id,
         "version": release.version,
         "framework": release.framework,
@@ -3914,11 +3915,16 @@ def _release_summary(release: ApehubWebRelease) -> dict[str, Any]:
         "file_md5": release.file_md5,
         "is_latest": release.is_latest,
         "enabled": release.enabled,
-        "download_count": release.download_count,
+        "download_count": (release.download_count or 0) + (release.virtual_download_count or 0)
+        if merge_virtual
+        else release.download_count,
         "created_at": release.created_at.isoformat() if release.created_at else None,
         "updated_at": release.updated_at.isoformat() if release.updated_at else None,
         "published_at": release.published_at.isoformat() if release.published_at else None,
     }
+    if not merge_virtual:
+        data["virtual_download_count"] = release.virtual_download_count or 0
+    return data
 
 
 @router.get("/site/public/releases")
@@ -3932,7 +3938,7 @@ async def public_releases(
         stmt = stmt.where(ApehubWebRelease.framework == framework)
     stmt = stmt.order_by(ApehubWebRelease.id.desc())
     result = await db.execute(stmt)
-    items = [_release_summary(r) for r in result.scalars().all()]
+    items = [_release_summary(r, merge_virtual=True) for r in result.scalars().all()]
     return success_response(data={"total": len(items), "items": items})
 
 
@@ -4005,6 +4011,7 @@ async def admin_create_release(
         is_latest=bool(body.is_latest),
         enabled=True,
         published_at=_parse_published_at(body.published_at),
+        virtual_download_count=body.virtual_download_count or 0,
     )
     db.add(release)
     await db.flush()

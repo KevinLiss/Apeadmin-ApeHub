@@ -3,15 +3,28 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '4ed500f3-2689-4709-9294-d46e4cb99178'
-  PropagateID: '4ed500f3-2689-4709-9294-d46e4cb99178'
-  ReservedCode1: 'ca4270ff-67f9-460c-9604-6da641ad48cc'
-  ReservedCode2: 'ca4270ff-67f9-460c-9604-6da641ad48cc'
+  ProduceID: '551f42bf-f5cf-4040-8f7e-4881bb515585'
+  PropagateID: '551f42bf-f5cf-4040-8f7e-4881bb515585'
+  ReservedCode1: 'dbdc5f3f-a707-427c-8d38-2fda63b765e5'
+  ReservedCode2: 'dbdc5f3f-a707-427c-8d38-2fda63b765e5'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.14.0] — 2026-09-21
+
+### Added
+- 「安装下载」页版本包虚拟下载量：
+  - `apehub_web_release` 新增 `virtual_download_count` 字段（迁移 v0021，幂等）
+  - 后台「版本管理」编辑/新增弹窗可设置虚拟下载量，列表同时显示真实数与虚拟数
+  - 官网公开接口展示合并数（真实 + 虚拟），不泄露虚拟字段明细
+  - 后台统计卡片「累计下载」按合并口径统计
+  - 数值校验：`ge=0`、上限 `le=2_000_000_000`，与插件虚拟计数一致
+
+### Fixed
+- 前台插件列表按合并计数排序时对 `download_count` / `virtual_download_count` 做 `COALESCE` 防护，避免 NULL 行导致排序漂移
 
 ## [1.13.1] — 2026-09-17
 
