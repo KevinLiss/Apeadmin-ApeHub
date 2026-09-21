@@ -164,7 +164,7 @@ function renderWorkbench() {
       <div class="info-grid">
         <div class="field"><label>插件标题</label><input id="editDisplayName" value="${esc(plugin.display_name)}"></div>
         <div class="field"><label>插件标识</label><input id="editName" value="${esc(plugin.name)}"><div class="field-hint">小写字母+下划线</div></div>
-        <div class="field"><label>售价 (元)</label><input id="editPrice" type="number" min="0" step="0.01" value="${money(plugin.price)}"><div class="field-hint">填 0 表示免费，付费最低 3 元</div></div>
+        <div class="field"><label>售价 (元)</label><input id="editPrice" type="number" min="0" max="200" step="0.01" value="${money(plugin.price)}"><div class="field-hint">填 0 表示免费，付费 3～200 元</div></div>
         <div class="field"><label>分类</label><select id="editCategory"></select></div>
         <div class="field"><label>开发语言</label><select id="editLanguage"><option value="python">Python (FastAPI)</option><option value="go">Go (Gin)</option></select><div class="field-hint">标识插件适配的 ApeAdmin 底座框架</div></div>
         <div class="field"><label>标签</label><input id="editTags" value="${esc(plugin.tags)}"><div class="field-hint">逗号分隔</div></div>
@@ -238,6 +238,7 @@ async function savePluginInfo() {
   };
   if (!payload.display_name) { toast('插件标题不能为空', true); return; }
   if (!payload.name) { toast('插件标识不能为空', true); return; }
+  if (!(payload.price >= 0) || payload.price > 200) { toast('售价需在 0～200 元之间（免费填 0）', true); return; }
   try {
     await api(`/apehub-web/developer/plugins/${plugin.id}`, { method: 'PUT', body: JSON.stringify(payload) });
     toast('基本信息已保存'); await selectPlugin(plugin.id); await refreshPlugins();
@@ -359,8 +360,9 @@ function renderVersionDetail() {
   if (!version) { root.innerHTML = '<div class="empty">请选择版本</div>'; return; }
   const editable = ['draft', 'rejected', 'analysis_failed'].includes(version.status);
   const isPublished = version.status === 'published';
+  const isApproved = version.status === 'approved';
   const isAnalyzing = version.status === 'analyzing';
-  const canEdit = editable || isPublished;
+  const canEdit = editable || isPublished || isApproved;
   const hasPackage = (version.files || []).length > 0;
   const hasDocs = !!(version.documentation && version.documentation.trim());
   const report = version.analysis_report;
@@ -371,8 +373,9 @@ function renderVersionDetail() {
   const riskColor = riskColors[report?.risk_level] || 'text-3';
   // Step guide for draft/rejected/analysis_failed versions
   const showSteps = editable;
-  // Re-review banner for published versions being edited
+  // Re-review banner for published/approved versions being edited
   const reReviewBanner = isPublished ? `<div class="re-review-banner">⚠️ 此版本已发布。修改内容或替换安装包后，版本将重新进入审核队列。</div>` : '';
+  const reApprovedBanner = isApproved ? `<div class="re-review-banner">⚠️ 此版本已通过审核。修改内容或替换安装包后，版本将重新进入审核队列。</div>` : '';
   const steps = [
     { label: '上传 ZIP', done: hasPackage, icon: '📦' },
     { label: '填写文档', done: hasDocs, icon: '📝' },
@@ -384,6 +387,7 @@ function renderVersionDetail() {
     <div class="version-head"><h4>${esc(version.version)}</h4><span class="status ${esc(version.status)}">${statusText(version.status)}</span></div>
     ${stepsHtml}
     ${reReviewBanner}
+    ${reApprovedBanner}
     ${emptyTip}
     ${version.compatibility ? `<div class="field" style="margin-bottom:14px"><label>兼容性</label><input id="versionCompat" value="${esc(version.compatibility)}" ${canEdit ? '' : 'disabled'}></div>` : ''}
     <div class="field"><label>更新说明${canEdit ? `<span class="label-actions"><button class="btn btn-small btn-ai-optimize" id="optimizeChangelogBtn" title="使用 AI 润色更新说明">AI 优化</button><button class="btn btn-small btn-ai-optimize" id="generateChangelogBtn" title="分析已上传的代码包，用 AI 生成更新说明">AI 补全</button></span>` : ''}</label><textarea id="versionChangelog" ${canEdit ? '' : 'disabled'}>${esc(version.changelog || '')}</textarea></div>
@@ -460,11 +464,11 @@ async function uploadCarousel(files) {
 
 async function uploadPackage(file) {
   if (!file || !state.selectedPlugin || !state.selectedVersion) return;
-  const wasPublished = state.selectedVersion.status === 'published';
+  const wasReviewed = ['published', 'approved'].includes(state.selectedVersion.status);
   const form = new FormData(); form.append('file', file);
   try {
     await api(`/apehub-web/developer/plugins/${state.selectedPlugin.id}/files?file_type=package&version_id=${state.selectedVersion.id}`, { method: 'POST', body: form });
-    toast(wasPublished ? '安装包已替换，版本重新提交审核' : '安装包校验并上传成功'); await selectPlugin(state.selectedPlugin.id);
+    toast(wasReviewed ? '安装包已替换，版本重新提交审核' : '安装包校验并上传成功'); await selectPlugin(state.selectedPlugin.id);
   } catch (error) { toast(error.message, true); }
 }
 
@@ -547,9 +551,9 @@ function loadDocsFile(file) {
 async function saveVersion() {
   const plugin = state.selectedPlugin, version = state.selectedVersion;
   try {
-    const wasPublished = version.status === 'published';
+    const wasReviewed = ['published', 'approved'].includes(version.status);
     await api(`/apehub-web/developer/plugins/${plugin.id}/versions/${version.id}`, { method: 'PUT', body: JSON.stringify({ changelog: $('#versionChangelog').value, documentation: $('#versionDocs').value }) });
-    toast(wasPublished ? '版本已保存并重新提交审核' : '版本资料已保存'); await selectPlugin(plugin.id);
+    toast(wasReviewed ? '版本已保存并重新提交审核' : '版本资料已保存'); await selectPlugin(plugin.id);
   } catch (error) { toast(error.message, true); }
 }
 

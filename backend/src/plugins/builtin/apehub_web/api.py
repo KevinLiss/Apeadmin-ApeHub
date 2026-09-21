@@ -323,17 +323,18 @@ async def _package_report(db: AsyncSession, version: ApehubWebPluginVersion) -> 
 
 
 def _editable_version(version: ApehubWebPluginVersion) -> bool:
-    """Check if a version can be edited. Returns True if this is a published version
-    being re-edited (which triggers re-review), False otherwise.
-    Raises ConflictException for truly locked statuses (submitted, reviewing, approved, deprecated).
+    """Check if a version can be edited. Returns True if this is a published/approved
+    version being re-edited (which triggers re-review), False otherwise.
+    Raises ConflictException for truly locked statuses (submitted, reviewing, deprecated).
     """
     if version.status in {
         PluginVersionStatus.DRAFT,
         PluginVersionStatus.REJECTED,
         PluginVersionStatus.ANALYSIS_FAILED,
+        PluginVersionStatus.APPROVED,
         PluginVersionStatus.PUBLISHED,
     }:
-        return version.status == PluginVersionStatus.PUBLISHED
+        return version.status in {PluginVersionStatus.APPROVED, PluginVersionStatus.PUBLISHED}
     raise ConflictException("当前版本状态不允许修改")
 
 
@@ -1949,7 +1950,7 @@ async def generate_version_documentation(
 # ---------------------------------------------------------------------------
 
 def _validate_plugin_price(price: Decimal) -> None:
-    """定价校验：人民币计价，付费插件最低 ¥3（支付渠道最低限额），免费为 0。"""
+    """定价校验：人民币计价，付费插件最低 ¥3（支付渠道最低限额）、最高 ¥200，免费为 0。"""
     if price is None:
         return
     if price < 0:
@@ -1958,6 +1959,8 @@ def _validate_plugin_price(price: Decimal) -> None:
         raise ValidationException("价格最多支持两位小数")
     if 0 < price < Decimal("3"):
         raise ValidationException("付费插件定价最低为 3 元人民币（免费请填 0）")
+    if price > Decimal("200"):
+        raise ValidationException("插件定价最高为 200 元人民币")
 
 
 async def _validate_plugin_category(db: AsyncSession, category: str) -> None:

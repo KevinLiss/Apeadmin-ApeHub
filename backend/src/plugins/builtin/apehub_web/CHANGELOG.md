@@ -3,15 +3,26 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '551f42bf-f5cf-4040-8f7e-4881bb515585'
-  PropagateID: '551f42bf-f5cf-4040-8f7e-4881bb515585'
-  ReservedCode1: 'dbdc5f3f-a707-427c-8d38-2fda63b765e5'
-  ReservedCode2: 'dbdc5f3f-a707-427c-8d38-2fda63b765e5'
+  ProduceID: '98dafbcd-1199-4330-a34e-04ce42415635'
+  PropagateID: '98dafbcd-1199-4330-a34e-04ce42415635'
+  ReservedCode1: '5689d0a4-ba1d-450e-ae67-7e4211765f0c'
+  ReservedCode2: '5689d0a4-ba1d-450e-ae67-7e4211765f0c'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.15.0] — 2026-09-21
+
+### Added
+- 已通过（approved）版本支持修改历史版本内容：
+  - 开发者可编辑已通过审核版本的更新说明、技术文档、兼容性，保存后版本自动重新进入审核队列（重审）
+  - 替换安装包 / 删除文件同样触发重审，与已发布版本行为一致
+  - 前端对 approved 版本显示「已通过审核 → 修改后重新进入审核队列」提示横幅
+- 插件定价上限 200 元：
+  - 新建/更新插件价格超过 200 元时拒绝（schema `le=200` + 业务校验双重防护）
+  - 个人中心新建插件与基本信息编辑的价格输入框增加 `max=200` 与提示文案「付费 3～200 元」
 
 ## [1.14.0] — 2026-09-21
 

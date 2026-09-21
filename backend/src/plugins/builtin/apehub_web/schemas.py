@@ -203,7 +203,7 @@ class PluginSubmitIn(BaseModel):
     language: str = Field(default="python", pattern="^(python|go)$")  # 适配的底座框架
     version: str = "1.0.0"
     tags: str = ""
-    price: Decimal = Field(default=Decimal("0"), ge=0)
+    price: Decimal = Field(default=Decimal("0"), ge=0, le=200)
     icon: str = ""
     demos: list[PluginDemoIn] = []
 
