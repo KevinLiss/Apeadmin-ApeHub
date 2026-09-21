@@ -172,23 +172,32 @@
   .tab-panel.active { display: block; animation: fadeIn .3s ease; }
   .sec-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
   .sec-title .em { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .sec-desc { color: var(--text-2); font-size: 15px; margin-bottom: 32px; }
-  .sub-title { font-size: 17px; font-weight: 700; margin: 36px 0 16px; display: flex; align-items: center; gap: 8px; }
-  .sub-title::before { content: ''; width: 4px; height: 18px; border-radius: 4px; background: var(--grad); }
+  .sec-desc { color: var(--text-2); font-size: 15px; margin-bottom: 36px; }
+  .sub-title { font-size: 17px; font-weight: 700; margin: 40px 0 18px; display: flex; align-items: center; gap: 10px; }
+  .sub-title::before { content: ''; width: 5px; height: 22px; border-radius: 4px; background: var(--grad); flex-shrink: 0; }
   p.text { color: var(--text-2); font-size: 15px; margin-bottom: 16px; }
 
   /* 功能卡片 */
-  .feat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
-  .feat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 22px; transition: all .25s; }
-  .feat-card:hover { transform: translateY(-3px); border-color: rgba(109,92,255,.3); }
-  .feat-card h4 { font-size: 15.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-  .feat-card p { font-size: 13.5px; color: var(--text-3); }
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; margin-bottom: 36px; }
+  .feat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: all .28s; position: relative; overflow: hidden; }
+  .feat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--grad); opacity: 0; transition: opacity .3s; }
+  .feat-card:hover { transform: translateY(-4px); border-color: rgba(109,92,255,.35); box-shadow: 0 16px 36px -12px rgba(109,92,255,.15); }
+  .feat-card:hover::before { opacity: 1; }
+  .feat-card h4 { font-size: 15.5px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; color: var(--text); }
+  .feat-card p { font-size: 13.5px; color: var(--text-2); line-height: 1.65; }
 
   /* 截图区 */
-  .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
-  .shot { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-  .shot .ph { height: 180px; background: linear-gradient(135deg, #1a1d2e, #0f1118); display: flex; align-items: center; justify-content: center; font-size: 48px; }
-  .shot .cap { padding: 12px 16px; font-size: 13px; color: var(--text-2); border-top: 1px solid var(--border); }
+  .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 36px; }
+  .shot { border-radius: 14px; overflow: hidden; transition: transform .3s, box-shadow .3s; }
+  .shot:hover { transform: translateY(-3px); box-shadow: 0 20px 48px -16px rgba(0,0,0,.5); }
+  .shot-window { background: #0a0c16; border: 1px solid var(--border-2); border-radius: 12px; overflow: hidden; box-shadow: 0 12px 32px -8px rgba(0,0,0,.3); }
+  .shot-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: rgba(255,255,255,.04); border-bottom: 1px solid var(--border); }
+  .shot-bar .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .shot-bar .dot-r { background: #ff5f57; }
+  .shot-bar .dot-y { background: #febc2e; }
+  .shot-bar .dot-g { background: #28c840; }
+  .shot img { width: 100%; display: block; }
+  .shot .cap { padding: 10px 16px; font-size: 13px; color: var(--text-2); }
 
   /* 参数表 */
   .tbl-wrap { overflow-x: auto; margin: 14px 0 24px; border: 1px solid var(--border); border-radius: 14px; }

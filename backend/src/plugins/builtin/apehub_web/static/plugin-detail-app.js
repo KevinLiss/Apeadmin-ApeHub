@@ -206,11 +206,15 @@ function renderDetail(plugin) {
     : detailEsc(plugin.icon || '插');
 
   const features = Array.isArray(ai.features) ? ai.features : [];
-  document.getElementById('featGrid').innerHTML = features.length ? features.map((feature, index) => `<div class="feat-card"><h4>${index + 1}. ${detailEsc(typeof feature === 'string' ? feature : feature.name || feature.title)}</h4><p>${detailEsc(typeof feature === 'string' ? '' : feature.description || '')}</p></div>`).join('') : `<div class="feat-card"><h4>插件能力</h4><p>${detailEsc(plugin.description)}</p></div>`;
+  document.getElementById('featGrid').innerHTML = features.length ? features.map((feature, index) => {
+    const name = detailEsc(typeof feature === 'string' ? feature : feature.name || feature.title || '');
+    const desc = detailEsc(typeof feature === 'string' ? '' : feature.description || '');
+    return `<div class="feat-card"><h4>${index + 1}. ${name}</h4>${desc ? `<p>${desc}</p>` : ''}</div>`;
+  }).join('') : `<div class="feat-card" style="grid-column:1/-1"><h4>插件能力</h4><p style="max-width:720px">${detailEsc(plugin.description || '暂无介绍')}</p></div>`;
 
   const shots = (plugin.media || []).filter(item => item.media_type === 'carousel');
   const shotRoot = document.querySelector('.shots');
-  shotRoot.innerHTML = shots.length ? shots.map(item => `<figure class="shot"><img src="${detailEsc(item.url)}" alt="${detailEsc(item.alt_text)}" style="width:100%;display:block"><figcaption class="cap">${detailEsc(item.alt_text || plugin.display_name)}</figcaption></figure>`).join('') : '<div class="empty" style="color:var(--text-3)">暂无产品截图</div>';
+  shotRoot.innerHTML = shots.length ? shots.map(item => `<figure class="shot"><div class="shot-window"><div class="shot-bar"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></div><img src="${detailEsc(item.url)}" alt="${detailEsc(item.alt_text)}"></div><figcaption class="cap">${detailEsc(item.alt_text || plugin.display_name)}</figcaption></figure>`).join('') : '<div class="empty" style="color:var(--text-3);grid-column:1/-1;text-align:center;padding:40px 0">暂无产品截图</div>';
 
   const isFree = Number(plugin.price) <= 0;
   const riskMap = { none: '无风险', low: '低', medium: '中', high: '高', critical: '严重' };

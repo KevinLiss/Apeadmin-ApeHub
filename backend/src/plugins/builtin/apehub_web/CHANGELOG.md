@@ -3,15 +3,29 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '82d3f662-714d-4317-9170-d9aeb486fe98'
-  PropagateID: '82d3f662-714d-4317-9170-d9aeb486fe98'
-  ReservedCode1: 'c2b3ce95-28d3-440d-a2e1-471f5b67a849'
-  ReservedCode2: 'c2b3ce95-28d3-440d-a2e1-471f5b67a849'
+  ProduceID: 'd0c483e4-dfb0-4e95-ac89-ddeb580c4a97'
+  PropagateID: 'd0c483e4-dfb0-4e95-ac89-ddeb580c4a97'
+  ReservedCode1: '5445c7ce-2d33-4a7c-81e2-08e167c05cfe'
+  ReservedCode2: '5445c7ce-2d33-4a7c-81e2-08e167c05cfe'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.18.0] — 2026-09-22
+
+### Improved
+- 插件详情页「核心功能」区块 UI 优化：
+  - 功能卡片网格改为 `auto-fill minmax(300px, 1fr)` 自适应布局，有 AI 特性数据时按卡片展示，无数据时通栏 fallback 卡片限制正文最大宽度
+  - 卡片 hover 增加顶部渐变条 + 阴影上浮动效，提升交互质感
+  - 卡片正文颜色从 `--text-3` 调深为 `--text-2`，改善可读性
+- 插件详情页「产品截图」区块 UI 优化：
+  - 截图渲染改为 macOS 窗口框架样式（顶部红黄绿三圆点 + 深色标题栏 + 外阴影）
+  - hover 增加上浮 + 阴影动效，增强立体感
+  - 无截图时居中显示空状态文案
+- 区块标题装饰条加粗加高（4px→5px、18px→22px），增强视觉标识性
+- 区块间距统一增大（32px→36px），呼吸感更舒展
 
 ## [1.17.0] — 2026-09-21
 
