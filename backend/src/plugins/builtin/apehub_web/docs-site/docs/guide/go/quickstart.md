@@ -1,3 +1,14 @@
+---
+AIGC:
+  ContentProducer: '001191110102MAD55U9H0F10002'
+  ContentPropagator: '001191110102MAD55U9H0F10002'
+  Label: '1'
+  ProduceID: '8951d399-f944-42bb-8f67-64e8f9d82980'
+  PropagateID: '8951d399-f944-42bb-8f67-64e8f9d82980'
+  ReservedCode1: 'f8d71123-e55b-47d5-b246-2e36bb53e5e3'
+  ReservedCode2: 'f8d71123-e55b-47d5-b246-2e36bb53e5e3'
+---
+
 # 本地运行
 
 ## 环境要求
@@ -38,6 +49,17 @@ npm run dev
 
 开发服务器运行在 `http://localhost:5173`，通过 Vite 代理访问后端 API。
 
+## 访问官网
+
+ApeHub 官网与市场作为插件随底座一起提供：
+
+- 首页：`http://127.0.0.1:8001/apehub-web/`
+- 插件市场：`http://127.0.0.1:8001/apehub-web/plugins.html`
+- 技术文档：`http://127.0.0.1:8001/apehub-web/docs-portal/`
+- 个人中心：`http://127.0.0.1:8001/apehub-web/profile.html`
+
+个人中心需要官网登录态；未登录时只显示登录提示，不读取开发者数据。
+
 ## 配置说明
 
 核心配置项见 `configs/config.yaml`，关键字段：
@@ -69,3 +91,5 @@ mcp:
 4. 在 MCP 面板试用工具调用。
 
 生产部署时不要使用默认密码，不要把密钥提交到代码仓库。
+
+> AI生成

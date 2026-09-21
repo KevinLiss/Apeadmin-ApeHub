@@ -3,15 +3,27 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: 'd0c483e4-dfb0-4e95-ac89-ddeb580c4a97'
-  PropagateID: 'd0c483e4-dfb0-4e95-ac89-ddeb580c4a97'
-  ReservedCode1: '5445c7ce-2d33-4a7c-81e2-08e167c05cfe'
-  ReservedCode2: '5445c7ce-2d33-4a7c-81e2-08e167c05cfe'
+  ProduceID: '22c59682-30e6-4703-9a75-2a10d697395d'
+  PropagateID: '22c59682-30e6-4703-9a75-2a10d697395d'
+  ReservedCode1: '8ade5f1f-9686-42b9-80a5-bcc6ee22f621'
+  ReservedCode2: '8ade5f1f-9686-42b9-80a5-bcc6ee22f621'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.19.0] — 2026-09-22
+
+### Improved
+- 技术文档（docs-portal）内容完善：
+  - 两版 API 文档补充「请求与响应示例」章节（登录 / 携带令牌 / 权限不足）
+  - Go 版 API 文档补充「Apehub_web 三类接口」鉴权说明（公开 / 开发者 / 后台）
+  - Python 版 API 文档补充 `/ai` 分组与「Apehub_web 接口明细」表（site/public、developer、admin 三组端点）
+  - Go 版「本地运行」补充官网访问路径（首页 / 市场 / 文档 / 个人中心）
+  - Go / Python「插件生命周期」补充「完整实战：带菜单与 MCP 工具的插件」示例（命名空间、权限标识、MCP 工具声明）
+  - 文档首页补充「快速上手」「文档导航」「常见问题」区块
+  - 重新构建 VitePress 产物并同步 `static/docs-portal`
 
 ## [1.18.0] — 2026-09-22
 

@@ -19,6 +19,7 @@ runtimes/
 
 # Database
 *.db
+*.db-journal
 *.sqlite3
 *.db.bak_*
 
