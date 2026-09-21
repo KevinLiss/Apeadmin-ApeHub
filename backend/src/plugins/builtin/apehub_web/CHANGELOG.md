@@ -3,15 +3,26 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '98dafbcd-1199-4330-a34e-04ce42415635'
-  PropagateID: '98dafbcd-1199-4330-a34e-04ce42415635'
-  ReservedCode1: '5689d0a4-ba1d-450e-ae67-7e4211765f0c'
-  ReservedCode2: '5689d0a4-ba1d-450e-ae67-7e4211765f0c'
+  ProduceID: '5987dff0-ee7e-4ee4-b219-89cc4a40f72f'
+  PropagateID: '5987dff0-ee7e-4ee4-b219-89cc4a40f72f'
+  ReservedCode1: '04189809-fb7f-453a-8a28-d91a0d8e9fdf'
+  ReservedCode2: '04189809-fb7f-453a-8a28-d91a0d8e9fdf'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.16.0] — 2026-09-21
+
+### Added
+- 后台审核工作台「AI 分析报告」支持主动生成与加载提示：
+  - 新增管理端 `POST /admin/plugins/{id}/versions/{vid}/analyze`（触发 AI 分析）与 `GET .../analysis`（查询进度）端点
+  - AI 分析报告 Tab 顶部新增「生成 AI 报告」按钮，审核员可主动发起分析（无需开发者先跑 AI 补全）
+  - 分析进行中显示加载提示框：旋转图标 + 进度条（阶段/进度）实时轮询（3 秒）刷新
+  - 报告为空时引导文案改为「点击上方生成 AI 报告按钮主动发起分析」
+  - 打开报告自动拉取最新分析状态；分析失败时给出错误提示
+  - 弹窗关闭 / 组件卸载自动停止轮询，避免内存泄漏
 
 ## [1.15.0] — 2026-09-21
 

@@ -2231,6 +2231,95 @@ async def _admin_plugin_version(
     return plugin, version
 
 
+@router.post("/admin/plugins/{plugin_id}/versions/{version_id}/analyze")
+async def admin_analyze_plugin_version(
+    plugin_id: int,
+    version_id: int,
+    background_tasks: BackgroundTasks,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user: Annotated[User, Depends(get_current_user)],
+):
+    """审核端主动触发 AI 分析：与开发者端 /analyze 一致，但用 admin 权限校验。"""
+    await _require_permission(user, "apehub_web:plugins:review")
+    _, version = await _admin_plugin_version(db, plugin_id, version_id)
+    package = (
+        await db.execute(
+            select(ApehubWebPluginFile.id).where(
+                ApehubWebPluginFile.version_id == version.id,
+                ApehubWebPluginFile.file_type == "package",
+            )
+        )
+    ).scalar_one_or_none()
+    if package is None:
+        raise ValidationException("该版本尚未上传插件 ZIP 安装包")
+    running = (
+        await db.execute(
+            select(ApehubWebAnalysisJob.id).where(
+                ApehubWebAnalysisJob.version_id == version.id,
+                ApehubWebAnalysisJob.status.in_([AnalysisStatus.QUEUED, AnalysisStatus.RUNNING]),
+            )
+        )
+    ).scalar_one_or_none()
+    if running:
+        raise ConflictException("该版本正在分析，请稍候")
+    cfg = await _get_site_config(db)
+    if cfg.ai_provider == "qwen":
+        if not cfg.qwen_api_key_enc:
+            raise ValidationException("请先在官网配置中设置千问（Qwen）API Key")
+        job_model = cfg.qwen_model
+    else:
+        if not cfg.deepseek_api_key_enc:
+            raise ValidationException("请先在官网配置中设置 DeepSeek API Key")
+        job_model = cfg.deepseek_model
+    job = ApehubWebAnalysisJob(
+        plugin_id=plugin_id,
+        version_id=version.id,
+        status=AnalysisStatus.QUEUED,
+        model=job_model,
+    )
+    db.add(job)
+    version.status = PluginVersionStatus.ANALYZING
+    await db.commit()
+    await db.refresh(job)
+    background_tasks.add_task(_run_analysis_job, job.id)
+    return success_response(data={"job_id": job.id, "status": job.status.value}, msg="AI 分析已开始")
+
+
+@router.get("/admin/plugins/{plugin_id}/versions/{version_id}/analysis")
+async def admin_get_plugin_analysis(
+    plugin_id: int,
+    version_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user: Annotated[User, Depends(get_current_user)],
+):
+    """审核端查询 AI 分析进度与结果（供前端轮询）。"""
+    await _require_permission(user, "apehub_web:plugins:review")
+    _, version = await _admin_plugin_version(db, plugin_id, version_id)
+    job = (
+        await db.execute(
+            select(ApehubWebAnalysisJob)
+            .where(ApehubWebAnalysisJob.version_id == version.id)
+            .order_by(ApehubWebAnalysisJob.id.desc())
+            .limit(1)
+        )
+    ).scalar_one_or_none()
+    return success_response(data={
+        "version_status": version.status.value,
+        "documentation": version.documentation,
+        "analysis_report": version.analysis_report,
+        "job": None if job is None else {
+            "id": job.id,
+            "status": job.status.value,
+            "stage": job.stage,
+            "progress": job.progress,
+            "model": job.model,
+            "error": job.error,
+            "created_at": job.created_at.isoformat() if job.created_at else None,
+            "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+        },
+    })
+
+
 @router.get("/admin/plugins/{plugin_id}/versions/{version_id}/source-tree")
 async def admin_version_source_tree(
     plugin_id: int,
