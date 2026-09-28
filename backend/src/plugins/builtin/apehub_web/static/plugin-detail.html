@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ApeAdmin · 插件详情</title>
+<title data-i18n="page.title.detail">ApeAdmin · 插件详情</title>
 <meta name="description" content="ApeAdmin 插件详情 —— 介绍、文档、Demo 体验与购买。" />
 <link rel="icon" type="image/png" href="/apehub-web/assets/logo.png" />
 <style>
@@ -302,15 +302,15 @@
   <div class="nav-inner">
     <a class="brand" href="/apehub-web/index.html"><img src="/apehub-web/assets/logo.png" alt="ApeAdmin" /><span>ApeAdmin <span class="badge">Detail</span></span></a>
     <div class="nav-links">
-      <a href="/apehub-web/index.html">首页</a>
-      <a href="/apehub-web/index.html#features">核心特性</a>
-      <a href="/apehub-web/index.html#mcp">MCP 网关</a>
-      <a class="active" href="/apehub-web/plugins.html">插件市场</a>
-      <a href="/apehub-web/docs-portal/">技术文档</a>
-      <a href="/apehub-web/profile.html" data-profile-nav style="display:none">个人中心</a>
+      <a href="/apehub-web/index.html" data-i18n="nav.home">首页</a>
+      <a href="/apehub-web/index.html#features" data-i18n="index.nav.features">核心特性</a>
+      <a href="/apehub-web/index.html#mcp" data-i18n="index.nav.mcp">MCP 网关</a>
+      <a class="active" href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
+      <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
+      <a href="/apehub-web/profile.html" data-profile-nav data-i18n="nav.profile" style="display:none">个人中心</a>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-ghost theme-toggle" id="themeToggle" aria-label="切换主题" title="切换明暗主题">🌙</button>
+      <button class="btn btn-ghost theme-toggle" id="themeToggle" aria-label="切换主题" title="切换明暗主题" data-i18n-aria="nav.theme.aria" data-i18n-title="nav.theme.title">🌙</button>
       <div class="gh-dropdown" data-gh-dropdown>
         <button class="btn btn-ghost gh-trigger" aria-haspopup="true" aria-expanded="false" title="GitHub 仓库">
           <svg class="gh-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -330,8 +330,8 @@
           </a>
         </div>
       </div>
-      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn">登录 / 注册</a>
-      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" hidden>个人中心</a>
+      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn" data-i18n="nav.login">登录 / 注册</a>
+      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" data-i18n="nav.profile" hidden>个人中心</a>
     </div>
     <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
   </div>
@@ -340,11 +340,11 @@
 <!-- 面包屑 -->
 <div class="container">
   <div class="breadcrumb">
-    <a href="/apehub-web/index.html">首页</a>
+    <a href="/apehub-web/index.html" data-i18n="nav.home">首页</a>
     <span class="sep">/</span>
-    <a href="/apehub-web/plugins.html">插件市场</a>
+    <a href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
     <span class="sep">/</span>
-    <span class="current" id="crumbName">插件详情</span>
+    <span class="current" id="crumbName" data-i18n="detail.crumb.current">插件详情</span>
   </div>
 </div>
 
@@ -354,27 +354,27 @@
   <div class="container">
     <div class="hero-inner">
       <div class="hero-left">
-        <div class="star-tag" id="starTag">⭐ ApeAdmin 精选插件</div>
+        <div class="star-tag" id="starTag" data-i18n="detail.star.tag">⭐ ApeAdmin 精选插件</div>
         <h1 id="pluginName">插件名称</h1>
         <div class="sub" id="pluginSub">核心卖点副标题</div>
         <p class="desc" id="pluginDesc">插件详细描述。</p>
         <div class="meta">
           <span>📦 <span id="pluginVer">v1.0.0</span></span>
           <span>👤 <span id="pluginAuthor">ApeAdmin</span></span>
-          <span>⬇ <span id="pluginDl">0</span> 下载</span>
+          <span>⬇ <span id="pluginDl">0</span> <span data-i18n="detail.dl">下载</span></span>
           <span>★ <span id="pluginRate">5.0</span></span>
         </div>
         <div class="hero-actions">
           <div style="position:relative;">
-            <button class="btn btn-ghost btn-lg" id="demoBtn">🖥 立即体验 ▾</button>
+            <button class="btn btn-ghost btn-lg" id="demoBtn" data-i18n="detail.demo.btn">🖥 立即体验 ▾</button>
             <div class="demo-dropdown" id="demoDropdown">
-              <a href="#demo" data-terminal="h5">📱 H5 在线体验</a>
-              <a href="#demo" data-terminal="pc">💻 PC 后台体验</a>
-              <a href="#demo" data-terminal="api">🔌 API 接口调试</a>
-              <a href="#demo" data-terminal="mcp">🤖 MCP 工具调用</a>
+              <a href="#demo" data-terminal="h5" data-i18n="detail.demo.h5">📱 H5 在线体验</a>
+              <a href="#demo" data-terminal="pc" data-i18n="detail.demo.pc">💻 PC 后台体验</a>
+              <a href="#demo" data-terminal="api" data-i18n="detail.demo.api">🔌 API 接口调试</a>
+              <a href="#demo" data-terminal="mcp" data-i18n="detail.demo.mcp">🤖 MCP 工具调用</a>
             </div>
           </div>
-          <button class="btn btn-primary btn-lg" id="buyBtn">🛒 立即购买</button>
+          <button class="btn btn-primary btn-lg" id="buyBtn" data-i18n="detail.buy.btn">🛒 立即购买</button>
         </div>
       </div>
       <div class="hero-right">
@@ -387,9 +387,9 @@
 <!-- Tab 栏 -->
 <div class="tabs-bar">
   <div class="tabs-inner">
-    <button class="tab-btn active" data-tab="intro">📖 介绍</button>
-    <button class="tab-btn" data-tab="docs">📄 文档</button>
-    <button class="tab-btn" data-tab="changelog">📜 更新日志</button>
+    <button class="tab-btn active" data-tab="intro" data-i18n="detail.tab.intro">📖 介绍</button>
+    <button class="tab-btn" data-tab="docs" data-i18n="detail.tab.docs">📄 文档</button>
+    <button class="tab-btn" data-tab="changelog" data-i18n="detail.tab.changelog">📜 更新日志</button>
   </div>
 </div>
 
@@ -399,10 +399,10 @@
 
   <!-- 介绍 -->
   <div class="tab-panel active" id="tab-intro">
-    <h2 class="sec-title">插件<span class="em">介绍</span></h2>
-    <p class="sec-desc">了解这个插件的核心能力、技术特点与使用场景。</p>
+    <h2 class="sec-title" data-i18n-html="detail.intro.title">插件<span class="em">介绍</span></h2>
+    <p class="sec-desc" data-i18n="detail.intro.desc">了解这个插件的核心能力、技术特点与使用场景。</p>
 
-    <h3 class="sub-title">核心功能</h3>
+    <h3 class="sub-title" data-i18n="detail.intro.features">核心功能</h3>
     <div class="feat-grid" id="featGrid">
       <div class="feat-card"><h4>🧠 多模型对话引擎</h4><p>支持 DeepSeek / 通义千问 / 智谱 GLM / OpenAI，统一 OpenAI 兼容接口。</p></div>
       <div class="feat-card"><h4>📡 流式 SSE 输出</h4><p>实时流式响应 + Markdown 渲染 + 代码高亮，体验流畅自然。</p></div>
@@ -410,7 +410,7 @@
       <div class="feat-card"><h4>🔐 密钥加密管理</h4><p>后台管理 AI 供应商密钥，加密存储，支持多供应商切换。</p></div>
     </div>
 
-    <h3 class="sub-title">产品截图</h3>
+    <h3 class="sub-title" data-i18n="detail.intro.shots">产品截图</h3>
     <div class="shots">
       <div class="shot"><div class="ph">💬</div><div class="cap">AI 对话主界面</div></div>
       <div class="shot"><div class="ph">⚙️</div><div class="cap">模型密钥管理</div></div>
@@ -418,10 +418,10 @@
       <div class="shot"><div class="ph">📊</div><div class="cap">对话统计看板</div></div>
     </div>
 
-    <h3 class="sub-title">技术参数</h3>
+    <h3 class="sub-title" data-i18n="detail.intro.params">技术参数</h3>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>参数</th><th>说明</th></tr></thead>
+        <thead><tr><th data-i18n="detail.table.th.param">参数</th><th data-i18n="detail.table.th.desc">说明</th></tr></thead>
         <tbody>
           <tr><td>插件版本</td><td>v2.1.0</td></tr>
           <tr><td>兼容版本</td><td>ApeAdmin ≥ 0.1.0</td></tr>
@@ -436,10 +436,10 @@
 
   <!-- 文档 -->
   <div class="tab-panel" id="tab-docs">
-    <h2 class="sec-title">技术<span class="em">文档</span></h2>
-    <p class="sec-desc">插件的安装配置、接口说明与使用指南。</p>
+    <h2 class="sec-title" data-i18n-html="detail.docs.title">技术<span class="em">文档</span></h2>
+    <p class="sec-desc" data-i18n="detail.docs.desc">插件的安装配置、接口说明与使用指南。</p>
 
-    <h3 class="sub-title">安装方式</h3>
+    <h3 class="sub-title" data-i18n="detail.docs.install">安装方式</h3>
     <div class="code-box">
       <div class="cb-head"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="fname">方式一：ZIP 上传安装</span></div>
       <pre><code><span class="c-c"># 1. 在管理后台 → 系统管理 → 插件管理</span>
@@ -482,8 +482,8 @@ AI_STREAM_ENABLED=<span class="c-s">true</span>
 
   <!-- 更新日志 -->
   <div class="tab-panel" id="tab-changelog">
-    <h2 class="sec-title">更新<span class="em">日志</span></h2>
-    <p class="sec-desc">插件版本迭代记录与功能变更。</p>
+    <h2 class="sec-title" data-i18n-html="detail.changelog.title">更新<span class="em">日志</span></h2>
+    <p class="sec-desc" data-i18n="detail.changelog.desc">插件版本迭代记录与功能变更。</p>
     <div class="changelog">
       <div class="log-item">
         <div><div class="ver">v2.1.0</div><div class="date">2026-08-20</div></div>
@@ -537,30 +537,35 @@ AI_STREAM_ENABLED=<span class="c-s">true</span>
 <div class="modal-overlay" id="buyModal">
   <div class="modal">
     <button class="close-btn" id="buyClose">✕</button>
-    <h3>选择授权方案</h3>
-    <p class="m-sub">不同授权方案满足个人、团队与企业的使用需求，全部包含完整源码。</p>
-    <div class="price-grid"><div class="price-card"><div class="p-name">\u6b63\u5728\u52a0\u8f7d\u63d2\u4ef6\u6388\u6743\u4fe1\u606f</div></div></div>\n  </div>\n</div>
+    <h3 data-i18n="detail.buy.title">选择授权方案</h3>
+    <p class="m-sub" data-i18n="detail.buy.sub">不同授权方案满足个人、团队与企业的使用需求，全部包含完整源码。</p>
+    <div class="price-grid"><div class="price-card"><div class="p-name" data-i18n="detail.buy.loading">正在加载插件授权信息</div></div></div>
+  </div>
+</div>
 
 <!-- 右侧悬浮 -->
 <div class="float-actions">
-  <div class="float-btn" title="客服咨询" onclick="alert('客服咨询（演示）')">💬</div>
-  <div class="float-btn" title="帮助文档" onclick="location.href='/apehub-web/docs-portal/'">📖</div>
-  <div class="float-btn" title="返回顶部" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+  <div class="float-btn" data-key="contact" title="客服咨询" data-i18n-title="detail.float.contact" onclick="alert('客服咨询（演示）')">💬</div>
+  <div class="float-btn" data-key="docs" title="帮助文档" data-i18n-title="detail.float.docs" onclick="location.href='/apehub-web/docs-portal/'">📖</div>
+  <div class="float-btn" data-key="top" title="返回顶部" data-i18n-title="detail.float.top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
 </div>
 
 <!-- 页脚 -->
 <footer>
   <div class="foot-inner">
-    <div class="l">© 2026 ApeAdmin · 插件详情 · MIT License</div>
+    <div class="l" data-i18n="detail.footer">© 2026 ApeAdmin · 插件详情 · MIT License</div>
     <div class="r">
-      <a href="/apehub-web/index.html">首页</a>
-      <a href="/apehub-web/plugins.html">插件市场</a>
-      <a href="/apehub-web/docs-portal/">技术文档</a>
+      <a href="/apehub-web/index.html" data-i18n="nav.home">首页</a>
+      <a href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
+      <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
       <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </footer>
 
-<script src="/apehub-web/site-runtime.js?v=2.1.0"></script>\n<script src="/apehub-web/auth-shell.js?v=1.3.0" defer></script>\n<script src="/apehub-web/plugin-detail-app.js?v=1.5.0" defer></script>
+<script src="/apehub-web/i18n.js?v=1.2.0"></script>
+<script src="/apehub-web/site-runtime.js?v=2.3.0"></script>
+<script src="/apehub-web/auth-shell.js?v=1.3.0" defer></script>
+<script src="/apehub-web/plugin-detail-app.js?v=1.8.0" defer></script>
 </body>
 </html>

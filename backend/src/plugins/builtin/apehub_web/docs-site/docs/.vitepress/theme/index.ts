@@ -1,4 +1,4 @@
-import { h, defineComponent, onMounted } from 'vue'
+import { h, defineComponent, onMounted, ref } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import './custom.css'
 
@@ -8,7 +8,16 @@ const VITEPRESS_THEME_KEY = 'vitepress-theme-appearance'
 const SiteActions = defineComponent({
   name: 'ApehubSiteActions',
   setup() {
+    const isEn = ref(false)
     onMounted(() => {
+      try {
+        // URL wins: pages under /en/ are English regardless of saved preference.
+        const pathIsEn = /\/en(\/|$)/.test(window.location.pathname)
+        const saved = localStorage.getItem('ape-lang')
+          || (/^zh/i.test(navigator.language || '') ? 'zh' : 'en')
+        isEn.value = pathIsEn || saved === 'en'
+      } catch (e) { /* keep zh */ }
+
       const root = document.documentElement
       const syncTheme = () => {
         const theme = root.classList.contains('dark') ? 'dark' : 'light'
@@ -23,7 +32,7 @@ const SiteActions = defineComponent({
     })
 
     return () => h('div', { class: 'apehub-site-actions' }, [
-      h('a', { class: 'apehub-site-link', href: '/apehub-web/', target: '_self' }, '官网首页'),
+      h('a', { class: 'apehub-site-link', href: '/apehub-web/', target: '_self' }, isEn.value ? 'Website Home' : '官网首页'),
     ])
   },
 })

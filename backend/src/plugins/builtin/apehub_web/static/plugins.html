@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ApeAdmin · 插件市场</title>
+<title data-i18n="page.title.plugins">ApeAdmin · 插件市场</title>
 <meta name="description" content="ApeAdmin 插件市场 —— 发现、安装和管理 ApeAdmin 插件。" />
 <link rel="icon" type="image/png" href="/apehub-web/assets/logo.png" />
 <style>
@@ -259,15 +259,15 @@
       <span>ApeAdmin <span class="badge">Plugins</span></span>
     </a>
     <div class="nav-links">
-      <a href="/apehub-web/index.html">首页</a>
-      <a href="/apehub-web/index.html#features">核心特性</a>
-      <a href="/apehub-web/index.html#mcp">MCP 网关</a>
-      <a class="active" href="/apehub-web/plugins.html">插件市场</a>
-      <a href="/apehub-web/docs-portal/">技术文档</a>
-      <a href="/apehub-web/profile.html" data-profile-nav style="display:none">个人中心</a>
+      <a href="/apehub-web/index.html" data-i18n="nav.home">首页</a>
+      <a href="/apehub-web/index.html#features" data-i18n="index.nav.features">核心特性</a>
+      <a href="/apehub-web/index.html#mcp" data-i18n="index.nav.mcp">MCP 网关</a>
+      <a class="active" href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
+      <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
+      <a href="/apehub-web/profile.html" data-profile-nav data-i18n="nav.profile" style="display:none">个人中心</a>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-ghost theme-toggle" id="themeToggle" aria-label="切换主题" title="切换明暗主题">🌙</button>
+      <button class="btn btn-ghost theme-toggle" id="themeToggle" aria-label="切换主题" title="切换明暗主题" data-i18n-aria="nav.theme.aria" data-i18n-title="nav.theme.title">🌙</button>
       <div class="gh-dropdown" data-gh-dropdown>
         <button class="btn btn-ghost gh-trigger" aria-haspopup="true" aria-expanded="false" title="GitHub 仓库">
           <svg class="gh-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -287,8 +287,8 @@
           </a>
         </div>
       </div>
-      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn">登录 / 注册</a>
-      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" hidden>个人中心</a>
+      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn" data-i18n="nav.login">登录 / 注册</a>
+      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" data-i18n="nav.profile" hidden>个人中心</a>
     </div>
     <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
   </div>
@@ -297,16 +297,16 @@
 <!-- 页面头部 -->
 <div class="page-head">
   <div class="container">
-    <h1>插件<span class="grad">市场</span></h1>
-    <p class="sub">发现、安装和管理 ApeAdmin 插件。插件支持 Python（FastAPI）与 Go（Gin）两种底座框架，ZIP 一键安装、热启用禁用，与底座完全解耦。</p>
+    <h1 data-i18n-html="plugins.title">插件<span class="grad">市场</span></h1>
+    <p class="sub" data-i18n="plugins.title.desc">发现、安装和管理 ApeAdmin 插件。插件支持 Python（FastAPI）与 Go（Gin）两种底座框架，ZIP 一键安装、热启用禁用，与底座完全解耦。</p>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="搜索插件名称、描述或标签..." />
-      <button id="searchBtn">搜索</button>
+      <input type="text" id="searchInput" placeholder="搜索插件名称、描述或标签..." data-i18n-placeholder="plugins.search.placeholder" />
+      <button id="searchBtn" data-i18n="plugins.search.btn">搜索</button>
     </div>
     <div class="fw-filter" id="fwFilter">
-      <button class="fw-pill active" data-fw="all"><span class="fw-dot"></span>全部框架</button>
-      <button class="fw-pill" data-fw="python"><span class="fw-dot"></span>Python (FastAPI)</button>
-      <button class="fw-pill" data-fw="go"><span class="fw-dot"></span>Go (Gin)</button>
+      <button class="fw-pill active" data-fw="all"><span class="fw-dot"></span><span data-i18n="plugins.filter.all">全部框架</span></button>
+      <button class="fw-pill" data-fw="python"><span class="fw-dot"></span><span data-i18n="plugins.filter.python">Python (FastAPI)</span></button>
+      <button class="fw-pill" data-fw="go"><span class="fw-dot"></span><span data-i18n="plugins.filter.go">Go (Gin)</span></button>
     </div>
     <div class="categories" id="categories">
       <span class="cat-pill active" data-cat="all">全部</span>
@@ -327,22 +327,25 @@
     <!-- 插件卡片由 JS 动态渲染 -->
   </div>
   <div class="load-more">
-    <button class="btn btn-ghost btn-sm" id="loadMore">加载更多</button>
+    <button class="btn btn-ghost btn-sm" id="loadMore" data-i18n="plugins.loadmore">加载更多</button>
   </div>
 </div>
 
 <!-- 页脚 -->
 <footer>
   <div class="foot-inner">
-    <div class="l">© 2026 ApeAdmin · 插件市场 · MIT License</div>
+    <div class="l" data-i18n="plugins.footer">© 2026 ApeAdmin · 插件市场 · MIT License</div>
     <div class="r">
-      <a href="/apehub-web/index.html">首页</a>
-      <a href="/apehub-web/docs-portal/">技术文档</a>
+      <a href="/apehub-web/index.html" data-i18n="nav.home">首页</a>
+      <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
       <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </footer>
 
-<script src="/apehub-web/site-runtime.js?v=2.1.0"></script>\n<script src="/apehub-web/auth-shell.js?v=1.3.0" defer></script>\n<script src="/apehub-web/marketplace.js?v=1.1.0" defer></script>
+<script src="/apehub-web/i18n.js?v=1.2.0"></script>
+<script src="/apehub-web/site-runtime.js?v=2.3.0"></script>
+<script src="/apehub-web/auth-shell.js?v=1.3.0" defer></script>
+<script src="/apehub-web/marketplace.js?v=1.2.0" defer></script>
 </body>
 </html>

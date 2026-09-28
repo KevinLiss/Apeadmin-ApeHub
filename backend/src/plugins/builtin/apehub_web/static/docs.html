@@ -4,10 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="refresh" content="0; url=/apehub-web/docs-portal/">
-  <title>ApeHub 技术文档</title>
+  <title data-i18n="docs.entry.title">ApeHub 技术文档</title>
   <link rel="canonical" href="/apehub-web/docs-portal/">
+  <script>
+    // Language-aware redirect: preserve the site language when entering the docs portal.
+    (function () {
+      try {
+        var lang = localStorage.getItem('ape-lang') || (/^zh/i.test(navigator.language || '') ? 'zh' : 'en');
+        var target = '/apehub-web/docs-portal/' + (lang === 'en' ? 'en/' : '');
+        document.querySelector('meta[http-equiv="refresh"]').setAttribute('content', '0; url=' + target);
+      } catch (e) { /* keep default redirect */ }
+    })();
+  </script>
 </head>
 <body>
-  <p>正在前往 <a href="/apehub-web/docs-portal/">ApeHub 技术文档</a>...</p>
+  <p data-i18n="docs.entry.text">正在前往 <a href="/apehub-web/docs-portal/">ApeHub 技术文档</a>...</p>
+  <script src="/apehub-web/i18n.js?v=1.2.0"></script>
 </body>
 </html>

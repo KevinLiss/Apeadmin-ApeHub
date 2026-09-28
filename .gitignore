@@ -80,6 +80,7 @@ backend/tests/test_ai_vision_worker.py
 .temp/
 *.log
 *.tmp
+.i18n.bak
 
 # Deploy package staging / artifacts
 deploy/.stage/

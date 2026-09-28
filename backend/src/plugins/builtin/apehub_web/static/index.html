@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ApeAdmin · 面向 AI 智能体场景的开发框架</title>
+<title data-i18n="page.title.home">ApeAdmin · 面向 AI 智能体场景的开发框架</title>
 <meta name="description" content="ApeAdmin —— 基于 FastAPI 与 Vue 3 的可扩展管理平台。内置异步数据层、RBAC 权限、插件生命周期、审计日志与 AI 能力接入。" />
 <link rel="icon" type="image/png" href="/apehub-web/assets/logo.png" />
 <style>
@@ -516,12 +516,12 @@
       <span>ApeAdmin <span class="badge">v0.1.0</span></span>
     </a>
     <div class="nav-links">
-      <a href="#features">核心特性</a>
-      <a href="#arch">架构</a>
-      <a href="#mcp">MCP 网关</a>
-      <a href="/apehub-web/plugins.html">插件市场</a>
-      <a href="/apehub-web/docs-portal/">技术文档</a>
-      <a href="/apehub-web/profile.html" data-profile-nav style="display:none">个人中心</a>
+      <a href="#features" data-i18n="index.nav.features">核心特性</a>
+      <a href="#arch" data-i18n="index.nav.arch">架构</a>
+      <a href="#mcp" data-i18n="index.nav.mcp">MCP 网关</a>
+      <a href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
+      <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
+      <a href="/apehub-web/profile.html" data-profile-nav style="display:none" data-i18n="nav.profile">个人中心</a>
     </div>
     <div class="nav-actions">
       <button class="btn btn-ghost theme-toggle" id="themeToggle" aria-label="切换主题" title="切换明暗主题">🌙</button>
@@ -534,18 +534,18 @@
         <div class="gh-menu" role="menu" aria-label="GitHub 仓库">
           <a class="gh-menu-item" href="https://github.com/KevinLiss/ApeAdmin-Gin" target="_blank" rel="noopener" role="menuitem">
             <span class="gh-dot gh-dot-go"></span>
-            <span class="gh-item-text">Go 版 (Gin)</span>
+            <span class="gh-item-text" data-i18n="index.gh.go">Go 版 (Gin)</span>
             <span class="gh-ext">↗</span>
           </a>
           <a class="gh-menu-item" href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener" role="menuitem">
             <span class="gh-dot gh-dot-py"></span>
-            <span class="gh-item-text">Python 版 (FastAPI)</span>
+            <span class="gh-item-text" data-i18n="index.gh.py">Python 版 (FastAPI)</span>
             <span class="gh-ext">↗</span>
           </a>
         </div>
       </div>
-      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn">登录 / 注册</a>
-      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" hidden>个人中心</a>
+      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn" data-i18n="nav.login">登录 / 注册</a>
+      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" hidden data-i18n="nav.profile">个人中心</a>
     </div>
     <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
   </div>
@@ -554,19 +554,19 @@
 <!-- Hero -->
 <header class="hero" id="top" data-block-key="hero">
   <div class="container">
-    <div class="ver-tag"><span class="dot"></span> 面向 AI 智能体场景的开源开发框架 · MIT License</div>
-    <h1>让中后台管理，<br />为 <span class="grad">AI 智能体</span> 而生</h1>
-    <p class="sub">ApeAdmin 基于 Fastapi/Gin + Vue3 打造，跳出传统后台设计思路，原生为 AI Agent 能力调用做适配。开箱即用、可插拔扩展，帮开发者快速搭建兼具业务管理与 AI 工具输出能力的应用。</p>
+    <div class="ver-tag"><span class="dot"></span> <span data-i18n="index.hero.tag">面向 AI 智能体场景的开源开发框架 · MIT License</span></div>
+    <h1 data-i18n-html="index.hero.h1">让中后台管理，<br />为 <span class="grad">AI 智能体</span> 而生</h1>
+    <p class="sub" data-i18n="index.hero.desc">ApeAdmin 基于 Fastapi/Gin + Vue3 打造，跳出传统后台设计思路，原生为 AI Agent 能力调用做适配。开箱即用、可插拔扩展，帮开发者快速搭建兼具业务管理与 AI 工具输出能力的应用。</p>
     <div class="cta">
-      <a class="btn btn-primary btn-lg" href="javascript:void(0)" id="heroLoginBtn">立即体验 →</a>
-      <a class="btn btn-ghost btn-lg" href="/apehub-web/plugins.html">插件市场</a>
-      <a class="btn btn-ghost btn-lg" href="/apehub-web/docs-portal/">技术文档</a>
+      <a class="btn btn-primary btn-lg" href="javascript:void(0)" id="heroLoginBtn" data-i18n="index.hero.cta.primary">立即体验 →</a>
+      <a class="btn btn-ghost btn-lg" href="/apehub-web/plugins.html" data-i18n="index.hero.cta.plugins">插件市场</a>
+      <a class="btn btn-ghost btn-lg" href="/apehub-web/docs-portal/" data-i18n="index.hero.cta.docs">技术文档</a>
     </div>
     <div class="stat-row">
-      <div class="stat"><div class="num">快速开发</div><div class="label">3 分钟跑起来，CLI 一键生成</div></div>
-      <div class="stat"><div class="num">专业架构</div><div class="label">Fastapi/Gin + Vue3 前后端分离</div></div>
-      <div class="stat"><div class="num">社区庞大</div><div class="label">插件市场持续沉淀生态</div></div>
-      <div class="stat"><div class="num">适配 AI</div><div class="label">MCP 网关原生对接 Agent</div></div>
+      <div class="stat"><div class="num" data-i18n="index.hero.stat1.num">快速开发</div><div class="label" data-i18n="index.hero.stat1.label">3 分钟跑起来，CLI 一键生成</div></div>
+      <div class="stat"><div class="num" data-i18n="index.hero.stat2.num">专业架构</div><div class="label" data-i18n="index.hero.stat2.label">Fastapi/Gin + Vue3 前后端分离</div></div>
+      <div class="stat"><div class="num" data-i18n="index.hero.stat3.num">社区庞大</div><div class="label" data-i18n="index.hero.stat3.label">插件市场持续沉淀生态</div></div>
+      <div class="stat"><div class="num" data-i18n="index.hero.stat4.num">适配 AI</div><div class="label" data-i18n="index.hero.stat4.label">MCP 网关原生对接 Agent</div></div>
     </div>
     <div class="hero-shot">
       <div class="shot-glow"></div>
@@ -582,44 +582,44 @@
   <div class="container">
     <div class="sec-head">
       <div class="sec-tag">Core Features</div>
-      <h2>开箱即用的企业级能力</h2>
-      <p>底座提供权限、菜单、日志等基础设施，业务功能以插件形式独立开发与部署，同时通过 MCP 网关将管理能力暴露给 AI Agent 调用。</p>
+      <h2 data-i18n="index.features.title">开箱即用的企业级能力</h2>
+      <p data-i18n="index.features.desc">底座提供权限、菜单、日志等基础设施，业务功能以插件形式独立开发与部署，同时通过 MCP 网关将管理能力暴露给 AI Agent 调用。</p>
     </div>
     <div class="features-grid">
       <div class="feature-card">
         <div class="icon ic-1">🛡️</div>
-        <h3>RBAC 权限体系</h3>
-        <p>标准五表模型（用户/角色/菜单/部门），四层权限粒度，无限层级树形菜单，超管自动通配。</p>
-        <div class="tags"><span class="tag">四层权限</span><span class="tag">菜单三类型</span><span class="tag">v-permission</span></div>
+        <h3 data-i18n="index.f1.title">RBAC 权限体系</h3>
+        <p data-i18n="index.f1.desc">标准五表模型（用户/角色/菜单/部门），四层权限粒度，无限层级树形菜单，超管自动通配。</p>
+        <div class="tags"><span class="tag" data-i18n="index.f1.tag1">四层权限</span><span class="tag" data-i18n="index.f1.tag2">菜单三类型</span><span class="tag">v-permission</span></div>
       </div>
       <div class="feature-card">
         <div class="icon ic-2">🧩</div>
-        <h3>插件化架构</h3>
-        <p>插件以 Python 包开发，自动发现、热启用禁用、ZIP 一键安装，与底座完全解耦。Go 版同样支持插件化扩展。</p>
+        <h3 data-i18n="index.f2.title">插件化架构</h3>
+        <p data-i18n="index.f2.desc">插件以 Python 包开发，自动发现、热启用禁用、ZIP 一键安装，与底座完全解耦。Go 版同样支持插件化扩展。</p>
         <div class="tags"><span class="tag">load→install→register</span><span class="tag">EventBus</span></div>
       </div>
       <div class="feature-card">
         <div class="icon ic-3">🔌</div>
-        <h3>MCP-SSE 网关</h3>
-        <p>将底座与插件能力封装为标准 AI 工具，Agent 可调用、RBAC 过滤、自动审计。</p>
+        <h3 data-i18n="index.f3.title">MCP-SSE 网关</h3>
+        <p data-i18n="index.f3.desc">将底座与插件能力封装为标准 AI 工具，Agent 可调用、RBAC 过滤、自动审计。</p>
         <div class="tags"><span class="tag">Tools</span><span class="tag">Resources</span><span class="tag">Prompts</span></div>
       </div>
       <div class="feature-card">
         <div class="icon ic-4">🤖</div>
-        <h3>AI 对话助手</h3>
-        <p>多模型支持、流式 SSE 输出、Function Calling 工具调用循环，后台管理密钥加密存储。</p>
-        <div class="tags"><span class="tag">DeepSeek</span><span class="tag">通义千问</span><span class="tag">智谱 GLM</span></div>
+        <h3 data-i18n="index.f4.title">AI 对话助手</h3>
+        <p data-i18n="index.f4.desc">多模型支持、流式 SSE 输出、Function Calling 工具调用循环，后台管理密钥加密存储。</p>
+        <div class="tags"><span class="tag">DeepSeek</span><span class="tag" data-i18n="index.f4.tag.qwen">通义千问</span><span class="tag" data-i18n="index.f4.tag.glm">智谱 GLM</span></div>
       </div>
       <div class="feature-card">
         <div class="icon ic-5">📜</div>
-        <h3>审计日志</h3>
-        <p>全局请求唯一 ID 追踪、操作记录、请求耗时监控，每次 AI 工具调用自动留痕。</p>
-        <div class="tags"><span class="tag">链路追踪</span><span class="tag">耗时监控</span></div>
+        <h3 data-i18n="index.f5.title">审计日志</h3>
+        <p data-i18n="index.f5.desc">全局请求唯一 ID 追踪、操作记录、请求耗时监控，每次 AI 工具调用自动留痕。</p>
+        <div class="tags"><span class="tag" data-i18n="index.f5.tag1">链路追踪</span><span class="tag" data-i18n="index.f5.tag2">耗时监控</span></div>
       </div>
       <div class="feature-card">
         <div class="icon ic-6">🎨</div>
-        <h3>可维护的管理平台底座</h3>
-        <p>仪表盘、电商、应用中心、用户中心、组件示例五大模块，全部基于 Element Plus 重写。</p>
+        <h3 data-i18n="index.f6.title">可维护的管理平台底座</h3>
+        <p data-i18n="index.f6.desc">仪表盘、电商、应用中心、用户中心、组件示例五大模块，全部基于 Element Plus 重写。</p>
         <div class="tags"><span class="tag">仪表盘 3</span><span class="tag">应用中心 13</span><span class="tag">组件示例 45</span></div>
       </div>
     </div>
@@ -631,29 +631,29 @@
   <div class="container">
     <div class="sec-head">
       <div class="sec-tag">Architecture</div>
-      <h2>前后端分离 · 底座与插件解耦</h2>
-      <p>单体应用架构 + 后端插件化扩展，双数据库驱动无缝切换，Redis 可选自动降级。</p>
+      <h2 data-i18n="index.arch.title">前后端分离 · 底座与插件解耦</h2>
+      <p data-i18n="index.arch.desc">单体应用架构 + 后端插件化扩展，双数据库驱动无缝切换，Redis 可选自动降级。</p>
     </div>
     <div class="arch-flow">
       <div class="arch-node">
         <div class="a-ic">🖥️</div>
-        <h4>前端 Vue3</h4>
-        <p>Vite 6 + TypeScript + Element Plus + Pinia</p>
+        <h4 data-i18n="index.arch.node1">前端 Vue3</h4>
+        <p data-i18n="index.arch.node1.sub">Vite 6 + TypeScript + Element Plus + Pinia</p>
       </div>
       <div class="arch-arrow">→</div>
       <div class="arch-node">
         <div class="a-ic">⚙️</div>
-        <h4>FastAPI / Gin 底座</h4>
-        <p>RBAC · 审计 · MCP 网关 · AI 对话 · 动态路由</p>
+        <h4 data-i18n="index.arch.node2">FastAPI / Gin 底座</h4>
+        <p data-i18n="index.arch.node2.sub">RBAC · 审计 · MCP 网关 · AI 对话 · 动态路由</p>
       </div>
       <div class="arch-arrow">→</div>
       <div class="arch-node">
         <div class="a-ic">🧩</div>
-        <h4>业务插件</h4>
-        <p>Python 包 / Go 模块 · 事件总线 · 可热插拔</p>
+        <h4 data-i18n="index.arch.node3">业务插件</h4>
+        <p data-i18n="index.arch.node3.sub">Python 包 / Go 模块 · 事件总线 · 可热插拔</p>
       </div>
     </div>
-    <div class="arch-note">数据库：SQLite（开发零配置）↔ MySQL（生产）双驱动自动切换 · 缓存：Redis 缺失自动降级内存</div>
+    <div class="arch-note" data-i18n="index.arch.note">数据库：SQLite（开发零配置）↔ MySQL（生产）双驱动自动切换 · 缓存：Redis 缺失自动降级内存</div>
   </div>
 </section>
 
@@ -662,18 +662,18 @@
   <div class="container">
     <div class="sec-head">
       <div class="sec-tag">MCP Gateway</div>
-      <h2>把管理系统变成 AI 的工具</h2>
-      <p>通过 MCP-SSE 网关，将底座与插件的管理能力封装为标准化 AI 工具，实现传统业务系统与大模型智能体的无缝打通。</p>
+      <h2 data-i18n="index.mcp.title">把管理系统变成 AI 的工具</h2>
+      <p data-i18n="index.mcp.desc">通过 MCP-SSE 网关，将底座与插件的管理能力封装为标准化 AI 工具，实现传统业务系统与大模型智能体的无缝打通。</p>
     </div>
     <div class="mcp-panel">
       <div class="mcp-left">
-        <h3>一条 <span class="grad">@mcp_manager.tool</span><br />让 Agent 直接接管系统</h3>
-        <p>插件只需几行代码即可向 MCP 网关注册工具。AI Agent 调用时自动进行 RBAC 过滤与审计，权限安全无缝延续。</p>
+        <h3 data-i18n-html="index.mcp.left.title">一条 <span class="grad">@mcp_manager.tool</span><br />让 Agent 直接接管系统</h3>
+        <p data-i18n="index.mcp.left.desc">插件只需几行代码即可向 MCP 网关注册工具。AI Agent 调用时自动进行 RBAC 过滤与审计，权限安全无缝延续。</p>
         <div class="mcp-list">
-          <div class="mcp-item"><div class="ck">✓</div><div><b>三原语支持</b><span>Tools 工具调用 / Resources 资源读取 / Prompts 模板渲染</span></div></div>
-          <div class="mcp-item"><div class="ck">✓</div><div><b>自动 Schema</b><span>从函数签名自动推断 JSON Schema，无需手写</span></div></div>
-          <div class="mcp-item"><div class="ck">✓</div><div><b>RBAC 过滤</b><span>Agent 只能看到当前用户有权限调用的工具</span></div></div>
-          <div class="mcp-item"><div class="ck">✓</div><div><b>全程审计</b><span>每次工具调用自动记录请求、响应、耗时与调用者</span></div></div>
+          <div class="mcp-item"><div class="ck">✓</div><div><b data-i18n="index.mcp.item1.title">三原语支持</b><span data-i18n="index.mcp.item1.sub">Tools 工具调用 / Resources 资源读取 / Prompts 模板渲染</span></div></div>
+          <div class="mcp-item"><div class="ck">✓</div><div><b data-i18n="index.mcp.item2.title">自动 Schema</b><span data-i18n="index.mcp.item2.sub">从函数签名自动推断 JSON Schema，无需手写</span></div></div>
+          <div class="mcp-item"><div class="ck">✓</div><div><b data-i18n="index.mcp.item3.title">RBAC 过滤</b><span data-i18n="index.mcp.item3.sub">Agent 只能看到当前用户有权限调用的工具</span></div></div>
+          <div class="mcp-item"><div class="ck">✓</div><div><b data-i18n="index.mcp.item4.title">全程审计</b><span data-i18n="index.mcp.item4.sub">每次工具调用自动记录请求、响应、耗时与调用者</span></div></div>
         </div>
       </div>
       <div class="code-box">
@@ -702,40 +702,40 @@
   <div class="container">
     <div class="sec-head">
       <div class="sec-tag">Tech Stack</div>
-      <h2>现代、稳健、可扩展</h2>
-      <p>选型兼顾性能与开发效率，双数据库驱动与可选缓存让你在开发与生产间无缝切换。</p>
+      <h2 data-i18n="index.stack.title">现代、稳健、可扩展</h2>
+      <p data-i18n="index.stack.desc">选型兼顾性能与开发效率，双数据库驱动与可选缓存让你在开发与生产间无缝切换。</p>
     </div>
     <div class="stack-grid">
       <div class="stack-card">
-        <h4><span class="s-ic">⚙️</span>后端</h4>
+        <h4><span class="s-ic">⚙️</span><span data-i18n="index.stack.backend">后端</span></h4>
         <div class="items"><span class="item">FastAPI</span><span class="item">Gin</span><span class="item">SQLAlchemy 2.0</span><span class="item">GORM</span><span class="item">Alembic</span></div>
       </div>
       <div class="stack-card">
-        <h4><span class="s-ic">🎨</span>前端</h4>
+        <h4><span class="s-ic">🎨</span><span data-i18n="index.stack.frontend">前端</span></h4>
         <div class="items"><span class="item">Vue 3.5</span><span class="item">Vite 6</span><span class="item">TypeScript 5.7</span><span class="item">Element Plus 2.9</span><span class="item">Pinia 2.3</span></div>
       </div>
       <div class="stack-card">
-        <h4><span class="s-ic">🗄️</span>数据存储</h4>
-        <div class="items"><span class="item">MySQL (aiomysql)</span><span class="item">SQLite (aiosqlite)</span><span class="item">Redis 可选</span></div>
+        <h4><span class="s-ic">🗄️</span><span data-i18n="index.stack.storage">数据存储</span></h4>
+        <div class="items"><span class="item">MySQL (aiomysql)</span><span class="item">SQLite (aiosqlite)</span><span class="item" data-i18n="index.stack.redis">Redis 可选</span></div>
       </div>
       <div class="stack-card">
-        <h4><span class="s-ic">📊</span>图表</h4>
+        <h4><span class="s-ic">📊</span><span data-i18n="index.stack.charts">图表</span></h4>
         <div class="items"><span class="item">ECharts 5.6</span><span class="item">vue-echarts</span></div>
       </div>
       <div class="stack-card">
-        <h4><span class="s-ic">🔐</span>认证安全</h4>
-        <div class="items"><span class="item">JWT</span><span class="item">bcrypt</span><span class="item">API Key 加密存储</span></div>
+        <h4><span class="s-ic">🔐</span><span data-i18n="index.stack.auth">认证安全</span></h4>
+        <div class="items"><span class="item">JWT</span><span class="item">bcrypt</span><span class="item" data-i18n="index.stack.keyenc">API Key 加密存储</span></div>
       </div>
       <div class="stack-card">
-        <h4><span class="s-ic">🤝</span>AI 协议</h4>
+        <h4><span class="s-ic">🤝</span><span data-i18n="index.stack.protocol">AI 协议</span></h4>
         <div class="items"><span class="item">MCP (SSE)</span><span class="item">Function Calling</span></div>
       </div>
       <div class="stack-card">
-        <h4><span class="s-ic">🧠</span>AI 模型</h4>
-        <div class="items"><span class="item">DeepSeek</span><span class="item">通义千问</span><span class="item">智谱 GLM</span><span class="item">OpenAI</span></div>
+        <h4><span class="s-ic">🧠</span><span data-i18n="index.stack.model">AI 模型</span></h4>
+        <div class="items"><span class="item">DeepSeek</span><span class="item" data-i18n="index.f4.tag.qwen">通义千问</span><span class="item" data-i18n="index.f4.tag.glm">智谱 GLM</span><span class="item">OpenAI</span></div>
       </div>
       <div class="stack-card">
-        <h4><span class="s-ic">💻</span>平台</h4>
+        <h4><span class="s-ic">💻</span><span data-i18n="index.stack.platform">平台</span></h4>
         <div class="items"><span class="item">Windows</span><span class="item">Linux</span><span class="item">macOS</span></div>
       </div>
     </div>
@@ -747,22 +747,22 @@
   <div class="container">
     <div class="sec-head">
       <div class="sec-tag">Plugin Ecosystem</div>
-      <h2>插件化 · 让业务独立生长</h2>
-      <p>插件间通过事件总线松耦合通信，支持 ZIP 上传安装，能力可路由注册、MCP 工具注册、事件监听。</p>
+      <h2 data-i18n="index.plugin.title">插件化 · 让业务独立生长</h2>
+      <p data-i18n="index.plugin.desc">插件间通过事件总线松耦合通信，支持 ZIP 上传安装，能力可路由注册、MCP 工具注册、事件监听。</p>
     </div>
     <div class="plug-wrap">
       <div class="plug-card">
-        <h4>🔄 完整生命周期</h4>
-        <p>load → install → register → uninstall，支持热启用禁用，无需重启即可插拔业务模块。</p>
-        <div class="ev">监听 <b>USER_LOGIN</b> · <b>APP_STARTUP</b> · <b>DB_READY</b></div>
+        <h4 data-i18n="index.plugin.card1.title">🔄 完整生命周期</h4>
+        <p data-i18n="index.plugin.card1.desc">load → install → register → uninstall，支持热启用禁用，无需重启即可插拔业务模块。</p>
+        <div class="ev" data-i18n-html="index.plugin.card1.ev">监听 <b>USER_LOGIN</b> · <b>APP_STARTUP</b> · <b>DB_READY</b></div>
       </div>
       <div class="plug-card">
-        <h4>📦 ZIP 一键安装</h4>
-        <p>上传 ZIP 包自动导入插件，无需手动放置文件，菜单路由动态生成。</p>
+        <h4 data-i18n="index.plugin.card2.title">📦 ZIP 一键安装</h4>
+        <p data-i18n="index.plugin.card2.desc">上传 ZIP 包自动导入插件，无需手动放置文件，菜单路由动态生成。</p>
       </div>
       <div class="plug-card">
-        <h4>🔗 能力开放</h4>
-        <p>插件可注册自有路由、MCP 工具与事件监听器，实现能力级对外开放。</p>
+        <h4 data-i18n="index.plugin.card3.title">🔗 能力开放</h4>
+        <p data-i18n="index.plugin.card3.desc">插件可注册自有路由、MCP 工具与事件监听器，实现能力级对外开放。</p>
       </div>
     </div>
   </div>
@@ -773,14 +773,14 @@
   <div class="container">
     <div class="sec-head">
       <div class="sec-tag">Quick Start</div>
-      <h2>三分钟跑起来</h2>
-      <p>默认使用 SQLite 零配置启动，无需额外安装数据库。</p>
+      <h2 data-i18n="index.start.title">三分钟跑起来</h2>
+      <p data-i18n="index.start.desc">默认使用 SQLite 零配置启动，无需额外安装数据库。</p>
     </div>
     <div class="start-wrap">
       <div class="start-steps">
-        <div class="step"><div class="n">1</div><div><b>启动后端</b><p>Python 版需 Python 3.11+，Go 版需 Go 1.21+，一行命令跑起后端服务。</p></div></div>
-        <div class="step"><div class="n">2</div><div><b>启动前端</b><p>Node.js 18+，npm install 后 npm run dev，访问 localhost:5173。</p></div></div>
-        <div class="step"><div class="n">3</div><div><b>登录体验</b><p>使用默认账号 admin / admin123 登录，开始管理你的系统。</p></div></div>
+        <div class="step"><div class="n">1</div><div><b data-i18n="index.start.step1.title">启动后端</b><p data-i18n="index.start.step1.desc">Python 版需 Python 3.11+，Go 版需 Go 1.21+，一行命令跑起后端服务。</p></div></div>
+        <div class="step"><div class="n">2</div><div><b data-i18n="index.start.step2.title">启动前端</b><p data-i18n="index.start.step2.desc">Node.js 18+，npm install 后 npm run dev，访问 localhost:5173。</p></div></div>
+        <div class="step"><div class="n">3</div><div><b data-i18n="index.start.step3.title">登录体验</b><p data-i18n="index.start.step3.desc">使用默认账号 admin / admin123 登录，开始管理你的系统。</p></div></div>
       </div>
       <div class="code-box">
         <div class="cb-head">
@@ -815,8 +815,8 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
 <section data-block-key="cta">
   <div class="container">
     <div class="cta-band">
-      <h2>开始构建你的 AI 中后台</h2>
-      <p>开源 · 免费 · 面向智能体场景，立即体验或给项目点个 Star。</p>
+      <h2 data-i18n="index.cta.title">开始构建你的 AI 中后台</h2>
+      <p data-i18n="index.cta.desc">开源 · 免费 · 面向智能体场景，立即体验或给项目点个 Star。</p>
       <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center;">
         <div class="gh-dropdown" data-gh-dropdown>
           <button class="btn btn-white btn-lg gh-trigger" aria-haspopup="true" aria-expanded="false" title="GitHub 仓库" style="cursor:pointer;">
@@ -827,17 +827,17 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
           <div class="gh-menu" style="right:auto;left:50%;margin-left:-105px;">
             <a class="gh-menu-item" href="https://github.com/KevinLiss/ApeAdmin-Gin" target="_blank" rel="noopener">
               <span class="gh-dot gh-dot-go"></span>
-              <span class="gh-item-text">Go 版 (Gin)</span>
-              <span class="gh-ext">↗</span>
-            </a>
-            <a class="gh-menu-item" href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">
-              <span class="gh-dot gh-dot-py"></span>
-              <span class="gh-item-text">Python 版 (FastAPI)</span>
+            <span class="gh-item-text" data-i18n="index.gh.go">Go 版 (Gin)</span>
+            <span class="gh-ext">↗</span>
+          </a>
+          <a class="gh-menu-item" href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener" role="menuitem">
+            <span class="gh-dot gh-dot-py"></span>
+            <span class="gh-item-text" data-i18n="index.gh.py">Python 版 (FastAPI)</span>
               <span class="gh-ext">↗</span>
             </a>
           </div>
         </div>
-        <a class="btn btn-line btn-lg" href="#features">了解更多</a>
+        <a class="btn btn-line btn-lg" href="#features" data-i18n="index.cta.more">了解更多</a>
       </div>
     </div>
   </div>
@@ -849,25 +849,25 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
     <div class="foot-grid">
       <div class="foot-brand">
         <div class="brand"><img src="/apehub-web/assets/logo.png" alt="ApeAdmin" /><span>ApeAdmin</span></div>
-        <p>面向 AI 智能体场景的开发框架。以 FastAPI/Gin 异步服务、Vue 3 管理界面、RBAC 与可控插件机制支撑持续交付。</p>
+        <p data-i18n="index.footer.brand">面向 AI 智能体场景的开发框架。以 FastAPI/Gin 异步服务、Vue 3 管理界面、RBAC 与可控插件机制支撑持续交付。</p>
       </div>
       <div class="foot-col">
-        <h5>产品</h5>
-        <a href="#features">核心特性</a>
-        <a href="#arch">架构</a>
-        <a href="#mcp">MCP 网关</a>
-        <a href="/apehub-web/plugins.html">插件市场</a>
+        <h5 data-i18n="index.footer.col1">产品</h5>
+        <a href="#features" data-i18n="index.nav.features">核心特性</a>
+        <a href="#arch" data-i18n="index.nav.arch">架构</a>
+        <a href="#mcp" data-i18n="index.nav.mcp">MCP 网关</a>
+        <a href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
       </div>
       <div class="foot-col">
-        <h5>开发</h5>
-        <a href="/apehub-web/docs-portal/">技术文档</a>
-        <a href="/apehub-web/plugins.html">插件市场</a>
-        <a href="#start">快速开始</a>
+        <h5 data-i18n="index.footer.col2">开发</h5>
+        <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
+        <a href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
+        <a href="#start" data-i18n="index.footer.quick">快速开始</a>
         <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">GitHub (Python)</a>
         <a href="https://github.com/KevinLiss/ApeAdmin-Gin" target="_blank" rel="noopener">GitHub (Go)</a>
       </div>
       <div class="foot-col">
-        <h5>社区</h5>
+        <h5 data-i18n="index.footer.col3">社区</h5>
         <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">Python 版 Issue</a>
         <a href="https://github.com/KevinLiss/ApeAdmin-Gin/issues" target="_blank" rel="noopener">Go 版 Issue</a>
         <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">Pull Request</a>
@@ -875,7 +875,7 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 ApeAdmin · 面向 AI 智能体场景的开发框架</span>
+      <span data-i18n="index.footer.bottom1">© 2026 ApeAdmin · 面向 AI 智能体场景的开发框架</span>
       <span>Fastapi/Gin · Vue 3 · SQLAlchemy · GORM</span>
     </div>
   </div>
@@ -889,36 +889,36 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
       <img src="/apehub-web/assets/logo.png" alt="ApeAdmin" />
       <span>ApeAdmin</span>
     </div>
-    <h3 class="modal-title" id="modalTitle">欢迎回来</h3>
-    <p class="modal-sub" id="modalSub">登录你的账户以继续</p>
+    <h3 class="modal-title" id="modalTitle" data-i18n="auth.welcome.back">欢迎回来</h3>
+    <p class="modal-sub" id="modalSub" data-i18n="auth.login.sub">登录你的账户以继续</p>
     <div class="tabs">
-      <button class="active" id="tabLogin">登录</button>
-      <button id="tabRegister">注册</button>
+      <button class="active" id="tabLogin" data-i18n="auth.login">登录</button>
+      <button id="tabRegister" data-i18n="auth.register">注册</button>
     </div>
     <form id="authForm">
       <div class="field" id="nameField">
-        <label>用户名</label>
-        <input type="text" id="usernameInput" placeholder="输入你的用户名" required minlength="3" maxlength="50" />
+        <label data-i18n="auth.username">用户名</label>
+        <input type="text" id="usernameInput" placeholder="输入你的用户名" required minlength="3" maxlength="50" data-i18n-placeholder="auth.usernamePlaceholder" />
       </div>
       <div class="field" id="emailField" style="display:none;">
-        <label>邮箱</label>
+        <label data-i18n="auth.email">邮箱</label>
         <input type="email" id="emailInput" placeholder="you@example.com" maxlength="100" />
       </div>
       <div class="field" id="codeField" style="display:none;">
-        <label>邮箱验证码</label>
+        <label data-i18n="auth.code">邮箱验证码</label>
         <div class="field-group">
-          <input type="text" placeholder="输入 6 位验证码" maxlength="6" id="codeInput" inputmode="numeric" />
-          <button type="button" class="send-code-btn" id="sendCodeBtn">发送验证码</button>
+          <input type="text" placeholder="输入 6 位验证码" maxlength="6" id="codeInput" inputmode="numeric" data-i18n-placeholder="auth.codePlaceholder" />
+          <button type="button" class="send-code-btn" id="sendCodeBtn" data-i18n="auth.getCode">发送验证码</button>
         </div>
       </div>
       <div class="field">
-        <label>密码</label>
-        <input type="password" id="passwordInput" placeholder="至少 8 位密码" required minlength="8" maxlength="100" />
+        <label data-i18n="auth.password">密码</label>
+        <input type="password" id="passwordInput" placeholder="至少 8 位密码" required minlength="8" maxlength="100" data-i18n-placeholder="auth.passwordPlaceholder" />
       </div>
-      <button type="submit" class="submit-btn" id="submitBtn">登录</button>
+      <button type="submit" class="submit-btn" id="submitBtn" data-i18n="auth.submit.login">登录</button>
     </form>
     <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
-    <div class="alt-text" id="altText">还没有账号？<a id="switchLink">立即注册</a></div>
+    <div class="alt-text" id="altText">还没有账号？<a id="switchLink" data-i18n="auth.goRegister">立即注册</a></div>
   </div>
 </div>
 
@@ -945,6 +945,7 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
   const altText = document.getElementById('altText');
   const authMessage = document.getElementById('authMessage');
   let mode = 'login';
+  const t2 = (key, fallback) => (window.apeI18n ? window.apeI18n.t(key) : fallback);
 
   function showMessage(message, isError = false) {
     authMessage.textContent = message || '';
@@ -1008,18 +1009,18 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
     const isLogin = mode === 'login';
     tabLogin.classList.toggle('active', isLogin);
     tabRegister.classList.toggle('active', !isLogin);
-    modalTitle.textContent = isLogin ? '欢迎回来' : '创建账户';
-    modalSub.textContent = isLogin ? '登录你的账户以继续' : '注册一个新账户开始使用';
+    modalTitle.textContent = isLogin ? t2('auth.welcome.back', '欢迎回来') : t2('auth.welcome.new', '创建账户');
+    modalSub.textContent = isLogin ? t2('auth.login.sub', '登录你的账户以继续') : t2('auth.register.sub', '注册一个新账户开始使用');
     nameField.style.display = 'block';
     emailField.style.display = isLogin ? 'none' : 'block';
     codeField.style.display = isLogin ? 'none' : 'block';
     emailInput.required = !isLogin;
     codeInput.required = !isLogin;
-    submitBtn.textContent = isLogin ? '登录' : '注册';
+    submitBtn.textContent = isLogin ? t2('auth.submit.login', '登录') : t2('auth.submit.register', '注册');
     showMessage('');
     altText.innerHTML = isLogin
-      ? '还没有账号？<a id="switchLink">立即注册</a>'
-      : '已有账号？<a id="switchLink">返回登录</a>';
+      ? `${t2('auth.noAccount', '还没有账号？')}<a id="switchLink">${t2('auth.goRegister', '立即注册')}</a>`
+      : `${t2('auth.hasAccount', '已有账号？')}<a id="switchLink">${t2('auth.goLogin', '返回登录')}</a>`;
     document.getElementById('switchLink').addEventListener('click', () => {
       openModal(mode === 'login' ? 'register' : 'login');
     });
@@ -1160,6 +1161,7 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
-<script src="/apehub-web/site-runtime.js?v=2.1.0"></script>
+<script src="/apehub-web/i18n.js?v=1.2.0"></script>
+<script src="/apehub-web/site-runtime.js?v=2.3.0"></script>
 </body>
 </html>

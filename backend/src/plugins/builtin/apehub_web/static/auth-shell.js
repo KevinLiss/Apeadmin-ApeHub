@@ -14,36 +14,36 @@
         <img src="/apehub-web/assets/logo.png" alt="ApeAdmin" onerror="this.style.display='none'" />
         <span>ApeAdmin</span>
       </div>
-      <h3 class="modal-title" id="modalTitle">欢迎回来</h3>
-      <p class="modal-sub" id="modalSub">登录你的账户以继续</p>
+      <h3 class="modal-title" id="modalTitle" data-i18n="auth.login">欢迎回来</h3>
+      <p class="modal-sub" id="modalSub" data-i18n="auth.login.sub">登录你的账户以继续</p>
       <div class="tabs">
-        <button class="active" id="tabLogin">登录</button>
-        <button id="tabRegister">注册</button>
+        <button class="active" id="tabLogin" data-i18n="auth.login">登录</button>
+        <button id="tabRegister" data-i18n="auth.register">注册</button>
       </div>
       <form id="authForm" novalidate>
         <div class="field" id="nameField">
-          <label>用户名</label>
-          <input type="text" id="usernameInput" placeholder="3-50 个字符，字母/数字/下划线" required minlength="3" maxlength="50" autocomplete="username" />
+          <label data-i18n="auth.username">用户名</label>
+          <input type="text" id="usernameInput" placeholder="3-50 个字符，字母/数字/下划线" required minlength="3" maxlength="50" autocomplete="username" data-i18n-placeholder="auth.usernamePlaceholder" />
         </div>
         <div class="field" id="emailField" style="display:none;">
-          <label>邮箱</label>
+          <label data-i18n="auth.email">邮箱</label>
           <input type="email" id="emailInput" placeholder="you@example.com" maxlength="100" autocomplete="email" />
         </div>
         <div class="field" id="codeField" style="display:none;">
-          <label>邮箱验证码</label>
+          <label data-i18n="auth.code">邮箱验证码</label>
           <div class="field-group">
-            <input type="text" placeholder="输入 6 位数字验证码" maxlength="6" id="codeInput" inputmode="numeric" autocomplete="one-time-code" />
-            <button type="button" class="send-code-btn" id="sendCodeBtn">发送验证码</button>
+            <input type="text" placeholder="输入 6 位数字验证码" maxlength="6" id="codeInput" inputmode="numeric" autocomplete="one-time-code" data-i18n-placeholder="auth.codePlaceholder" />
+            <button type="button" class="send-code-btn" id="sendCodeBtn" data-i18n="auth.getCode">发送验证码</button>
           </div>
         </div>
         <div class="field">
-          <label>密码</label>
-          <input type="password" id="passwordInput" placeholder="至少 8 位密码" required minlength="8" maxlength="100" autocomplete="new-password" />
+          <label data-i18n="auth.password">密码</label>
+          <input type="password" id="passwordInput" placeholder="至少 8 位密码" required minlength="8" maxlength="100" autocomplete="new-password" data-i18n-placeholder="auth.passwordPlaceholder" />
         </div>
-        <button type="submit" class="submit-btn" id="submitBtn">登录</button>
+        <button type="submit" class="submit-btn" id="submitBtn" data-i18n="auth.submit.login">登录</button>
       </form>
       <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
-      <div class="alt-text" id="altText">还没有账号？<a id="switchLink">立即注册</a></div>
+      <div class="alt-text" id="altText" data-i18n-html="auth.noAccount">还没有账号？<a id="switchLink" data-i18n="auth.goRegister">立即注册</a></div>
     </div>
   </div>`;
 
@@ -218,26 +218,27 @@
     mode = m;
     updateMode();
     modal.classList.add('show');
+    window.dispatchEvent(new CustomEvent('apeAuthModalOpened', { detail: { mode } }));
   }
   function closeModal() { modal.classList.remove('show'); }
   function updateMode() {
     const isLogin = mode === 'login';
     tabLogin.classList.toggle('active', isLogin);
     tabRegister.classList.toggle('active', !isLogin);
-    modalTitle.textContent = isLogin ? '欢迎回来' : '创建账户';
-    modalSub.textContent = isLogin ? '登录你的账户以继续' : '注册一个新账户开始使用';
+    modalTitle.textContent = isLogin ? (window.apeI18n ? window.apeI18n.t('auth.welcome.back') : '欢迎回来') : (window.apeI18n ? window.apeI18n.t('auth.welcome.new') : '创建账户');
+    modalSub.textContent = isLogin ? (window.apeI18n ? window.apeI18n.t('auth.login.sub') : '登录你的账户以继续') : (window.apeI18n ? window.apeI18n.t('auth.register.sub') : '注册一个新账户开始使用');
     nameField.style.display = 'block';
     emailField.style.display = isLogin ? 'none' : 'block';
     codeField.style.display = isLogin ? 'none' : 'block';
     emailInput.required = !isLogin;
     codeInput.required = !isLogin;
-    submitBtn.textContent = isLogin ? '登录' : '注册';
+    submitBtn.textContent = isLogin ? (window.apeI18n ? window.apeI18n.t('auth.submit.login') : '登录') : (window.apeI18n ? window.apeI18n.t('auth.submit.register') : '注册');
     passwordInput.autocomplete = isLogin ? 'current-password' : 'new-password';
     showMessage('');
     [usernameInput, emailInput, codeInput, passwordInput].forEach(el => fieldError(el, false));
     altText.innerHTML = isLogin
-      ? '还没有账号？<a id="switchLink">立即注册</a>'
-      : '已有账号？<a id="switchLink">返回登录</a>';
+      ? (window.apeI18n ? `${window.apeI18n.t('auth.noAccount')}<a id="switchLink">${window.apeI18n.t('auth.goRegister')}</a>` : '还没有账号？<a id="switchLink">立即注册</a>')
+      : (window.apeI18n ? `${window.apeI18n.t('auth.hasAccount')}<a id="switchLink">${window.apeI18n.t('auth.goLogin')}</a>` : '已有账号？<a id="switchLink">返回登录</a>');
     document.getElementById('switchLink').addEventListener('click', () => {
       openModal(mode === 'login' ? 'register' : 'login');
     });

@@ -6,7 +6,6 @@
   // Local user preference (ape-theme) overrides it once set. Default to 'light'.
   const savedTheme = localStorage.getItem('ape-theme') || 'light';
   root.setAttribute('data-theme', savedTheme);
-
   // Fetch public config to apply site-level theme_mode when no local override exists.
   (async () => {
     try {
@@ -52,6 +51,7 @@
   // Bind theme toggle buttons (after DOM is ready)
   document.addEventListener('DOMContentLoaded', () => {
     updateToggleIcons();
+    ensureLangToggle();
     document.querySelectorAll('#themeToggle').forEach(btn => {
       btn.addEventListener('click', toggleTheme);
     });
@@ -137,10 +137,51 @@
     if (!response.ok || payload.code !== 200) throw new Error(payload.msg || 'request failed');
     return payload.data;
   };
+  const i18n = () => window.apeI18n;
+  const NAV_TITLE_KEYS = [
+    { match: /\/apehub-web\/index\.html|^\/$/, key: 'nav.home' },
+    { match: /\/apehub-web\/plugins\.html/, key: 'nav.plugins' },
+    { match: /\/apehub-web\/docs-portal\//, key: 'nav.docs' },
+    { match: /\/apehub-web\/docs\.html/, key: 'nav.docs' },
+    { match: /\/apehub-web\/download\.html/, key: 'nav.download' },
+    { match: /\/apehub-web\/profile\.html/, key: 'nav.profile' },
+  ];
+  const navTitleFor = (item) => {
+    if (!i18n()) return item.title;
+    const hit = NAV_TITLE_KEYS.find(n => n.match.test(item.link || ''));
+    return hit ? i18n().t(hit.key) : item.title;
+  };
+  const isProfileItem = item => {
+    const title = item.title || '';
+    return /个人中心/.test(title) || /Profile|Account/i.test(title) || /\/profile\.html/.test(item.link || '');
+  };
+
+  /* Language toggle: injected as a small button next to the theme toggle.
+     site-runtime.js renders it lazily so i18n.js (loaded first) can bind it. */
+  function ensureLangToggle() {
+    if (document.getElementById('langToggle')) return;
+    const actions = document.querySelector('.nav-actions');
+    if (!actions) return;
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-ghost theme-toggle';
+    btn.id = 'langToggle';
+    btn.type = 'button';
+    btn.style.cssText = 'font-size:12px;font-weight:700;letter-spacing:.5px;min-width:38px';
+    btn.textContent = '中';
+    btn.setAttribute('aria-label', '切换语言');
+    btn.setAttribute('title', '切换中英文');
+    actions.insertBefore(btn, actions.firstChild);
+    // i18n.js may have finished binding before this button existed; ask it to
+    // sync the label (and let its delegated click handler take over).
+    if (window.apeI18n && typeof window.apeI18n.updateLangButtons === 'function') {
+      window.apeI18n.updateLangButtons();
+    }
+  }
+
   const createNavLink = (item) => {
     const link = document.createElement('a');
     link.href = item.link;
-    link.textContent = item.title;
+    link.textContent = navTitleFor(item);
     if (item.open_mode === 'new') { link.target = '_blank'; link.rel = 'noopener'; }
     if (item.icon_url) {
       const icon = document.createElement('img');
@@ -173,12 +214,13 @@
   const style = document.createElement('style');
   style.textContent = '[hidden]{display:none!important}';
   document.head.prepend(style);
-  const isProfileItem = item => /个人中心/.test(item.title || '') || /\/profile\.html(?:$|[?#])/.test(item.link || '');
   (async () => {
     try {
       const [config, navigation, content, authenticated] = await Promise.all([get('/config'), get('/navigation'), get('/content'), hasValidSession()]);
       if (/\/(?:apehub-web\/)?(?:index\.html)?$/.test(window.location.pathname)) {
-        document.title = config.seo_title || config.site_name || document.title;
+        // In English mode the admin-managed (Chinese) seo_title yields to i18n.
+        const isEn = window.apeI18n && window.apeI18n.lang === 'en';
+        document.title = isEn ? document.title : (config.seo_title || config.site_name || document.title);
       }
       document.querySelectorAll('link[rel="icon"]').forEach((icon) => { icon.href = config.site_icon || config.site_logo; });
       document.querySelectorAll('.brand img, .modal-logo img').forEach((image) => { image.src = config.site_logo || image.src; });
@@ -202,6 +244,24 @@
       console.warn('Apehub_web public configuration unavailable', error);
     }
   })();
+
+  /* Language switch: re-apply i18n and re-render dynamic content/navigation.
+     Chinese content from the backend stays as-is; English UI labels come from i18n.js. */
+  window.addEventListener('apeI18n.switch', async () => {
+    try {
+      const navigation = await get('/navigation');
+      const authenticated = await hasValidSession();
+      document.querySelectorAll('.nav-links').forEach((container) => {
+        const visibleNavigation = authenticated ? navigation : navigation.filter(item => !isProfileItem(item));
+        container.replaceChildren(...visibleNavigation.map(createNavLink));
+      });
+    } catch { /* keep current nav */ }
+    try {
+      const response = await fetch('/api/v1/apehub-web/site/public/content');
+      const payload = await response.json();
+      if (payload.code === 200) { applyBlockContent(payload.data); applyContentLayout(payload.data); }
+    } catch { /* keep current layout */ }
+  });
 
   /**
    * 将后台「内容管理」保存的文字（title / subtitle / body）渲染到对应区块 DOM。
@@ -230,25 +290,29 @@
       if (item.title && sel.title) {
         const el = section.querySelector(sel.title);
         if (!el) return;
+        const titleText = (i18n() && i18n().lang === 'en' && i18n().t(`content.${key}.title`) !== `content.${key}.title`)
+          ? i18n().t(`content.${key}.title`) : item.title;
         if (key === 'hero') {
           // hero 标题：逗号后换行，第二行整体加渐变色高亮
-          const parts = item.title.split('，');
+          const parts = titleText.split('，');
           if (parts.length >= 2) {
             el.innerHTML = parts[0] + '，<br><span class="grad">' + parts.slice(1).join('，') + '</span>';
           } else {
-            el.textContent = item.title;
+            el.textContent = titleText;
           }
         } else {
-          el.textContent = item.title;
+          el.textContent = titleText;
         }
       }
       if (item.subtitle && sel.subtitle) {
         const el = section.querySelector(sel.subtitle);
-        if (el) el.textContent = item.subtitle;
+        if (el) el.textContent = (i18n() && i18n().lang === 'en' && i18n().t(`content.${key}.subtitle`) !== `content.${key}.subtitle`)
+          ? i18n().t(`content.${key}.subtitle`) : item.subtitle;
       }
       if (item.body && sel.body) {
         const el = section.querySelector(sel.body);
-        if (el) el.textContent = item.body;
+        if (el) el.textContent = (i18n() && i18n().lang === 'en' && i18n().t(`content.${key}.body`) !== `content.${key}.body`)
+          ? i18n().t(`content.${key}.body`) : item.body;
       }
     });
   }

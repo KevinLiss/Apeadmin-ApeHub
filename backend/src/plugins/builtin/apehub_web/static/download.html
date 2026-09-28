@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ApeAdmin · 安装下载</title>
+<title data-i18n="page.title.download">ApeAdmin · 安装下载</title>
 <meta name="description" content="ApeAdmin 安装下载 —— 下载最新版 ApeAdmin，快速搭建你的 AI 中后台。" />
 <link rel="icon" type="image/png" href="/apehub-web/assets/logo.png" />
 <style>
@@ -267,13 +267,14 @@
       <span>ApeAdmin <span class="badge">Download</span></span>
     </a>
     <div class="nav-links">
-      <a href="/apehub-web/index.html">首页</a>
-      <a href="/apehub-web/plugins.html">插件市场</a>
-      <a href="/apehub-web/docs-portal/">技术文档</a>
-      <a class="active" href="/apehub-web/download.html">安装下载</a>
+        <a href="/apehub-web/index.html" data-i18n="nav.home">首页</a>
+      <a href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
+      <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
+      <a class="active" href="/apehub-web/download.html" data-i18n="nav.download">安装下载</a>
+      <a href="/apehub-web/profile.html" data-profile-nav data-i18n="nav.profile" style="display:none">个人中心</a>
     </div>
     <div class="nav-actions">
-      <button class="btn btn-ghost theme-toggle" id="themeToggle" aria-label="切换主题" title="切换明暗主题">🌙</button>
+      <button class="btn btn-ghost theme-toggle" id="themeToggle" aria-label="切换主题" title="切换明暗主题" data-i18n-aria="nav.theme.aria" data-i18n-title="nav.theme.title">🌙</button>
       <div class="gh-dropdown" data-gh-dropdown>
         <button class="btn btn-ghost gh-trigger" aria-haspopup="true" aria-expanded="false" title="GitHub 仓库">
           <svg class="gh-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -293,8 +294,8 @@
           </a>
         </div>
       </div>
-      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn">登录 / 注册</a>
-      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" hidden>个人中心</a>
+      <a class="btn btn-primary" href="javascript:void(0)" id="navLoginBtn" data-i18n="nav.login">登录 / 注册</a>
+      <a class="btn btn-primary" href="/apehub-web/profile.html" id="navProfileBtn" data-i18n="nav.profile" hidden>个人中心</a>
     </div>
     <button class="menu-toggle" id="menuToggle" aria-label="菜单">☰</button>
   </div>
@@ -303,74 +304,74 @@
 <!-- 页面头部 -->
 <div class="page-head">
   <div class="container">
-    <h1>安装<span class="grad">下载</span></h1>
-    <p class="sub">下载 ApeAdmin 安装包，快速搭建你的 AI 中后台。支持 ZIP 一键安装、热启用禁用插件，与底座完全解耦。</p>
+    <h1 data-i18n-html="download.title">安装<span class="grad">下载</span></h1>
+    <p class="sub" data-i18n="download.title.desc">下载 ApeAdmin 安装包，快速搭建你的 AI 中后台。支持 ZIP 一键安装、热启用禁用插件，与底座完全解耦。</p>
   </div>
 </div>
 
 <!-- 框架切换 -->
 <div class="container">
   <div class="fw-tabs" id="fwTabs">
-    <button class="fw-tab active" data-fw="python" id="fwTabPython"><span class="fw-dot"></span>Python 版 (FastAPI)</button>
-    <button class="fw-tab" data-fw="go" id="fwTabGo"><span class="fw-dot"></span>Go 版 (Gin)</button>
+    <button class="fw-tab active" data-fw="python" id="fwTabPython"><span class="fw-dot"></span><span data-i18n="download.python.title">Python 版 (FastAPI)</span></button>
+    <button class="fw-tab" data-fw="go" id="fwTabGo"><span class="fw-dot"></span><span data-i18n="download.go.title">Go 版 (Gin)</span></button>
   </div>
 </div>
 
 <!-- 最新版本 -->
 <div class="container">
   <div class="latest-card" id="latestCard" hidden>
-    <span class="lc-tag">最新版本</span>
+    <span class="lc-tag" data-i18n="download.latest.tag">最新版本</span>
     <div class="lc-version" id="latestVersion">v1.7.0</div>
     <div class="lc-title" id="latestTitle"></div>
     <div class="lc-desc" id="latestDesc"></div>
     <div class="lc-actions">
-      <a class="lc-btn" id="latestDownloadBtn" href="javascript:void(0)">立即下载</a>
-      <a class="lc-btn ghost" href="#releases">查看全部版本</a>
+      <a class="lc-btn" id="latestDownloadBtn" href="javascript:void(0)" data-i18n="download.latest.download">立即下载</a>
+      <a class="lc-btn ghost" href="#releases" data-i18n="download.latest.viewall">查看全部版本</a>
     </div>
   </div>
 
   <!-- 版本列表 -->
   <div class="section-head" id="releases">
-    <h2>全部版本</h2>
-    <p>包含历史版本与更新日志，可按需下载</p>
+    <h2 data-i18n="download.versions.title">全部版本</h2>
+    <p data-i18n="download.versions.sub">包含历史版本与更新日志，可按需下载</p>
   </div>
   <div class="releases-list" id="releasesList">
-    <div class="loading-tip">正在加载版本列表...</div>
+    <div class="loading-tip" data-i18n="download.loading">正在加载版本列表...</div>
   </div>
 
   <!-- 安装说明 -->
   <div class="section-head">
-    <h2>安装说明</h2>
-    <p id="installGuideSub">三步完成部署（Python 版）</p>
+    <h2 data-i18n="download.guide.title">安装说明</h2>
+    <p id="installGuideSub" data-i18n="download.installGuideSub">三步完成部署（Python 版）</p>
   </div>
   <div class="install-guide">
     <!-- Python 安装说明 -->
     <div id="guidePython">
       <div class="guide-card">
-        <h3><span class="step-num">1</span>下载安装包</h3>
-        <p>点击上方「立即下载」获取最新版 ZIP 安装包，也可在全部版本中选择历史版本。</p>
+        <h3><span class="step-num">1</span><span data-i18n="download.guide.python.step1.title">下载安装包</span></h3>
+        <p data-i18n="download.guide.python.step1.desc">点击上方「立即下载」获取最新版 ZIP 安装包，也可在全部版本中选择历史版本。</p>
       </div>
       <div class="guide-card">
-        <h3><span class="step-num">2</span>上传到服务器</h3>
-        <p>将安装包上传至 ApeAdmin 服务器，然后在管理后台「系统管理 → 版本更新」中选择该 ZIP 包并一键更新。</p>
+        <h3><span class="step-num">2</span><span data-i18n="download.guide.python.step2.title">上传到服务器</span></h3>
+        <p data-i18n="download.guide.python.step2.desc">将安装包上传至 ApeAdmin 服务器，然后在管理后台「系统管理 → 版本更新」中选择该 ZIP 包并一键更新。</p>
         <code># 也可通过命令行部署
 pip install -r requirements.txt
 python -m uvicorn src.main:app --host 0.0.0.0 --port 80</code>
       </div>
       <div class="guide-card">
-        <h3><span class="step-num">3</span>完成部署</h3>
-        <p>服务启动后访问 <code style="display:inline;padding:2px 8px">http://你的域名/admin/</code>，默认账号 admin，首次登录后请及时修改密码。更多细节见<a href="/apehub-web/docs-portal/guide/python/overview.html" style="color:var(--primary)">Python 技术文档</a>。</p>
+        <h3><span class="step-num">3</span><span data-i18n="download.guide.python.step3.title">完成部署</span></h3>
+        <p data-i18n="download.guide.python.step3.desc">服务启动后访问 <code style="display:inline;padding:2px 8px">http://你的域名/admin/</code>，默认账号 admin，首次登录后请及时修改密码。更多细节见<a href="/apehub-web/docs-portal/guide/python/overview.html" style="color:var(--primary)">Python 技术文档</a>。</p>
       </div>
     </div>
     <!-- Go 安装说明 -->
     <div id="guideGo" hidden>
       <div class="guide-card">
-        <h3><span class="step-num">1</span>下载安装包</h3>
-        <p>点击上方「立即下载」获取 Go 版 ZIP 安装包。Go 版为单二进制部署，无需 Python 运行时。</p>
+        <h3><span class="step-num">1</span><span data-i18n="download.guide.go.step1.title">下载安装包</span></h3>
+        <p data-i18n="download.guide.go.step1.desc">点击上方「立即下载」获取 Go 版 ZIP 安装包。Go 版为单二进制部署，无需 Python 运行时。</p>
       </div>
       <div class="guide-card">
-        <h3><span class="step-num">2</span>编译并启动</h3>
-        <p>将 ZIP 解压后，编译并运行单个可执行文件，默认端口 8001：</p>
+        <h3><span class="step-num">2</span><span data-i18n="download.guide.go.step2.title">编译并启动</span></h3>
+        <p data-i18n="download.guide.go.step2.desc">将 ZIP 解压后，编译并运行单个可执行文件，默认端口 8001：</p>
         <code># 编译（需要 Go 1.21+）
 go build ./...
 
@@ -378,8 +379,8 @@ go build ./...
 go run cmd/server/main.go</code>
       </div>
       <div class="guide-card">
-        <h3><span class="step-num">3</span>配置与访问</h3>
-        <p>生产环境请修改 <code style="display:inline;padding:2px 8px">configs/config.yaml</code> 中的 jwt.secret 并设置 debug=false。访问 <code style="display:inline;padding:2px 8px">http://localhost:8001</code>，默认账号 admin / admin123。更多细节见<a href="/apehub-web/docs-portal/guide/go/overview.html" style="color:var(--primary)">Go 技术文档</a>。</p>
+        <h3><span class="step-num">3</span><span data-i18n="download.guide.go.step3.title">配置与访问</span></h3>
+        <p data-i18n="download.guide.go.step3.desc">生产环境请修改 <code style="display:inline;padding:2px 8px">configs/config.yaml</code> 中的 jwt.secret 并设置 debug=false。访问 <code style="display:inline;padding:2px 8px">http://localhost:8001</code>，默认账号 admin / admin123。更多细节见<a href="/apehub-web/docs-portal/guide/go/overview.html" style="color:var(--primary)">Go 技术文档</a>。</p>
       </div>
     </div>
   </div>
@@ -388,18 +389,19 @@ go run cmd/server/main.go</code>
 <!-- 页脚 -->
 <footer>
   <div class="foot-inner">
-    <div class="l">© 2026 ApeAdmin · 安装下载 · MIT License</div>
+    <div class="l" data-i18n="download.footer">© 2026 ApeAdmin · 安装下载 · MIT License</div>
     <div class="r">
-      <a href="/apehub-web/index.html">首页</a>
-      <a href="/apehub-web/plugins.html">插件市场</a>
-      <a href="/apehub-web/docs-portal/">技术文档</a>
+      <a href="/apehub-web/index.html" data-i18n="nav.home">首页</a>
+      <a href="/apehub-web/plugins.html" data-i18n="nav.plugins">插件市场</a>
+      <a href="/apehub-web/docs-portal/" data-i18n="nav.docs">技术文档</a>
       <a href="https://github.com/KevinLiss/ApeAdmin" target="_blank" rel="noopener">GitHub</a>
     </div>
   </div>
 </footer>
 
-<script src="/apehub-web/site-runtime.js?v=2.1.0"></script>
+<script src="/apehub-web/i18n.js?v=1.2.0"></script>
+<script src="/apehub-web/site-runtime.js?v=2.3.0"></script>
 <script src="/apehub-web/auth-shell.js?v=1.3.0" defer></script>
-<script src="/apehub-web/releases-app.js?v=1.1.0" defer></script>
+<script src="/apehub-web/releases-app.js?v=1.2.0" defer></script>
 </body>
 </html>

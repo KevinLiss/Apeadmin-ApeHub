@@ -3,15 +3,31 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '22c59682-30e6-4703-9a75-2a10d697395d'
-  PropagateID: '22c59682-30e6-4703-9a75-2a10d697395d'
-  ReservedCode1: '8ade5f1f-9686-42b9-80a5-bcc6ee22f621'
-  ReservedCode2: '8ade5f1f-9686-42b9-80a5-bcc6ee22f621'
+  ProduceID: '841f3adf-af79-4145-a751-bcceeafee1b8'
+  PropagateID: '841f3adf-af79-4145-a751-bcceeafee1b8'
+  ReservedCode1: 'eba0723d-6923-4926-84be-9fbe6fec38af'
+  ReservedCode2: 'eba0723d-6923-4926-84be-9fbe6fec38af'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.20.0] — 2026-09-28
+
+### Added
+- 官网全站中英文双语支持（首页 / 插件市场 / 插件详情 / 安装下载 / 个人中心 / 文档入口）：
+  - 右上角新增语言切换按钮，默认语言跟随浏览器，手动切换写入 localStorage（`ape-lang`）
+  - 技术文档站（VitePress）双语化：新增 18 篇英文文档（`docs-site/docs/en/`），locales 配置 root=中文、en=英文，导航/侧边栏/页脚/标题全量英文化
+  - 插件数据按 slug 映射英文（display_name / description / tags），分类名英文映射补齐（开发工具/AI 能力/数据管理/系统运维/UI 增强/业务应用）
+- 各页面 `<title>` 纳入 i18n（新增 `page.title.*` 词条，五个页面打 data-i18n 标记）
+
+### Fixed
+- 语言切换按钮点击失效：i18n.js 改用 document 级事件委托，规避 site-runtime.js 在 DOMContentLoaded 之后才注入按钮的时序竞态；按钮注入后主动同步文案
+- 插件详情页语言切换报错（`Cannot set properties of null`）：`applyLabelConfig` 改为按 id 定位 meta 行，不再用嵌套 span 索引误删 `pluginAuthor`
+- 插件详情页英文模式下精标/作者/标签仍显示中文：en 模式忽略后台中文配置，回退 i18n 词表（`detail.author/rating/version` 词条补齐）；tags 经 pluginEn 映射翻译
+- marketplace.js 变量遮蔽 bug（`tagsRaw` 函数被同名常量遮蔽导致 TypeError）修复，分类/插件英文名映射补齐
+- VitePress locales title 配置字段错误（误嵌在 theme 对象内导致标题退化为「VitePress」）修正；文档站「官网首页」链接改为语言感知（URL /en/ 优先）
 
 ## [1.19.0] — 2026-09-22
 

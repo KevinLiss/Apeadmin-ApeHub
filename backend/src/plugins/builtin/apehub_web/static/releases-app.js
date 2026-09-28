@@ -6,12 +6,18 @@
     return n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(2)} MB` : n > 0 ? `${Math.ceil(n / 1024)} KB` : '';
   };
   const formatDate = d => d ? d.replace('T', ' ').slice(0, 10) : '';
+  const i18n = () => window.apeI18n;
+  const t = key => { const api = i18n(); return api ? api.t(key) : key; };
 
   // 当前框架：python | go，默认 python
   let currentFramework = 'python';
   let loading = false;
 
   const FW_LABEL = { python: 'Python 版 (FastAPI)', go: 'Go 版 (Gin)' };
+
+  function frameworkLabels(fw) {
+    return fw === 'go' ? (t('download.go.badge') === 'download.go.badge' ? 'Go 版' : t('download.go.badge')) : (t('download.python.badge') === 'download.python.badge' ? 'Python 版' : t('download.python.badge'));
+  }
 
   function setFramework(fw) {
     if (fw === currentFramework) return;
@@ -25,12 +31,8 @@
     if (guidePython) guidePython.hidden = fw !== 'python';
     if (guideGo) guideGo.hidden = fw !== 'go';
     const sub = document.getElementById('installGuideSub');
-    if (sub) sub.textContent = `三步完成部署（${frameworkLabels(fw)}）`;
+    if (sub) sub.textContent = t('download.guide.sub.fmt').replace('{fw}', fw === 'go' ? t('download.go') : t('download.python'));
     loadReleases();
-  }
-
-  function frameworkLabels(fw) {
-    return fw === 'go' ? 'Go 版' : 'Python 版';
   }
 
   async function loadReleases() {
@@ -38,14 +40,14 @@
     const latestCard = document.getElementById('latestCard');
     if (loading) return;
     loading = true;
-    listEl.innerHTML = '<div class="loading-tip">正在加载版本列表...</div>';
+    listEl.innerHTML = `<div class="loading-tip">${esc(t('download.loading'))}</div>`;
     try {
       const response = await fetch(`/api/v1/apehub-web/site/public/releases?framework=${encodeURIComponent(currentFramework)}`);
       const payload = await response.json();
-      if (!response.ok || payload.code !== 200) throw new Error(payload.msg || '版本列表加载失败');
+      if (!response.ok || payload.code !== 200) throw new Error(payload.msg || t('download.loading'));
       const items = payload.data.items || [];
       if (!items.length) {
-        listEl.innerHTML = '<div class="loading-tip">暂无可用安装包，敬请期待</div>';
+        listEl.innerHTML = `<div class="loading-tip">${esc(t('download.empty'))}</div>`;
         if (latestCard) latestCard.hidden = true;
         return;
       }
@@ -71,23 +73,23 @@
         const isLatest = !!item.is_latest;
         const changelog = item.changelog
           ? item.changelog.split('\n').filter(line => line.trim()).map(line => `• ${line.trim()}`).join('\n')
-          : (item.description || '暂无更新日志');
+          : (item.description || t('download.noChangelog'));
         const hasFile = !!item.file_name;
         return `<div class="release-item">
           <div class="r-ver"><span class="ver-badge ${isLatest ? '' : 'old'}">v${esc(item.version)}</span></div>
           <div class="r-body">
-            <div class="r-title">${esc(item.title || `ApeAdmin ${item.version}`)}${isLatest ? '<span class="r-latest-tag">最新</span>' : ''}</div>
+            <div class="r-title">${esc(item.title || `ApeAdmin ${item.version}`)}${isLatest ? `<span class="r-latest-tag">${esc(t('download.rLatestTag'))}</span>` : ''}</div>
             <div class="r-changelog">${esc(changelog)}</div>
             <div class="r-meta">
-              <span>${formatSize(item.file_size) || '未上传安装包'}</span>
-              <span>下载 ${Number(item.download_count || 0).toLocaleString()}</span>
+              <span>${formatSize(item.file_size) || t('download.notUploaded')}</span>
+              <span>${t('download.dl')} ${Number(item.download_count || 0).toLocaleString()}</span>
               <span>${formatDate(item.published_at) || formatDate(item.updated_at) || formatDate(item.created_at)}</span>
             </div>
           </div>
           <div class="r-actions">
             ${hasFile
-              ? `<a class="dl-btn" href="/api/v1/apehub-web/site/public/releases/${item.id}/download" download="${esc(item.file_name)}">下载</a>`
-              : '<button class="dl-btn ghost" disabled>未上传</button>'}
+              ? `<a class="dl-btn" href="/api/v1/apehub-web/site/public/releases/${item.id}/download" download="${esc(item.file_name)}">${esc(t('download.dl'))}</a>`
+              : `<button class="dl-btn ghost" disabled>${esc(t('download.noFile'))}</button>`}
           </div>
         </div>`;
       }).join('');
@@ -102,6 +104,9 @@
   document.querySelectorAll('.fw-tab').forEach(tab => {
     tab.addEventListener('click', () => setFramework(tab.dataset.fw));
   });
+
+  // 语言切换时重新拉取（文案变化）
+  window.addEventListener('apeI18n.switch', () => loadReleases());
 
   loadReleases();
 })();
