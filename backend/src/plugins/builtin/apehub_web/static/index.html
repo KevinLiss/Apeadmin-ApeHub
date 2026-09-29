@@ -480,6 +480,9 @@
   .modal .alt-text { text-align: center; font-size: 13px; color: var(--text-3); margin-top: 18px; }
   .modal .alt-text a { color: var(--primary-2); font-weight: 600; cursor: pointer; }
   .modal .alt-text a:hover { text-decoration: underline; }
+  .modal .auth-extra { text-align: center; font-size: 13px; margin-top: 12px; }
+  .modal .auth-extra a { color: var(--text-3); cursor: pointer; text-decoration: underline; }
+  .modal .auth-extra a:hover { color: var(--primary-2); }
 
   /* ---------- 主题切换按钮 ---------- */
   .theme-toggle { font-size: 16px; padding: 8px 12px; line-height: 1; }
@@ -911,7 +914,7 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
           <button type="button" class="send-code-btn" id="sendCodeBtn" data-i18n="auth.getCode">发送验证码</button>
         </div>
       </div>
-      <div class="field">
+      <div class="field" id="passwordField">
         <label data-i18n="auth.password">密码</label>
         <input type="password" id="passwordInput" placeholder="至少 8 位密码" required minlength="8" maxlength="100" data-i18n-placeholder="auth.passwordPlaceholder" />
       </div>
@@ -919,11 +922,14 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
     </form>
     <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
     <div class="alt-text" id="altText">还没有账号？<a id="switchLink" data-i18n="auth.goRegister">立即注册</a></div>
+    <div class="auth-extra" id="forgotLinkWrap" style="display:none;">
+      <a id="forgotLink" data-i18n="auth.forgot">忘记密码？</a>
+    </div>
   </div>
 </div>
 
 <script>
-  // 登录/注册弹窗逻辑
+  // 登录/注册/找回密码弹窗逻辑
   const modal = document.getElementById('authModal');
   const modalClose = document.getElementById('modalClose');
   const navLoginBtn = document.getElementById('navLoginBtn');
@@ -937,15 +943,22 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
   const usernameInput = document.getElementById('usernameInput');
   const emailInput = document.getElementById('emailInput');
   const passwordInput = document.getElementById('passwordInput');
+  const passwordField = document.getElementById('passwordField');
   const codeInput = document.getElementById('codeInput');
   const codeField = document.getElementById('codeField');
   const sendCodeBtn = document.getElementById('sendCodeBtn');
   const submitBtn = document.getElementById('submitBtn');
   const switchLink = document.getElementById('switchLink');
   const altText = document.getElementById('altText');
+  const forgotLinkWrap = document.getElementById('forgotLinkWrap');
+  const forgotLink = document.getElementById('forgotLink');
   const authMessage = document.getElementById('authMessage');
   let mode = 'login';
   const t2 = (key, fallback) => (window.apeI18n ? window.apeI18n.t(key) : fallback);
+  const fmt = (key, fallback, vars) => {
+    const raw = t2(key, fallback);
+    return Object.entries(vars || {}).reduce((s, [k, v]) => s.replaceAll(`{${k}}`, String(v)), raw);
+  };
 
   function showMessage(message, isError = false) {
     authMessage.textContent = message || '';
@@ -963,7 +976,7 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
       const first = detail[0] || {};
       const fieldMap = {
         username: '用户名', password: '密码', email: '邮箱',
-        verification_code: '邮箱验证码', nickname: '昵称',
+        verification_code: '邮箱验证码', nickname: '昵称', new_password: '新密码',
       };
       const loc = Array.isArray(first.loc) ? first.loc.filter(p => p !== 'body') : [];
       const fieldName = fieldMap[loc[0]] || loc.join('.') || '表单';
@@ -1003,27 +1016,54 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
     mode = m;
     updateMode();
     modal.classList.add('show');
+    window.dispatchEvent(new CustomEvent('apeAuthModalOpened', { detail: { mode } }));
   }
   function closeModal() { modal.classList.remove('show'); }
   function updateMode() {
     const isLogin = mode === 'login';
+    const isRegister = mode === 'register';
+    const isReset = mode === 'reset';
     tabLogin.classList.toggle('active', isLogin);
-    tabRegister.classList.toggle('active', !isLogin);
-    modalTitle.textContent = isLogin ? t2('auth.welcome.back', '欢迎回来') : t2('auth.welcome.new', '创建账户');
-    modalSub.textContent = isLogin ? t2('auth.login.sub', '登录你的账户以继续') : t2('auth.register.sub', '注册一个新账户开始使用');
-    nameField.style.display = 'block';
-    emailField.style.display = isLogin ? 'none' : 'block';
-    codeField.style.display = isLogin ? 'none' : 'block';
+    tabRegister.classList.toggle('active', isRegister);
+    const titleKey = isReset ? 'auth.reset.title' : isLogin ? 'auth.welcome.back' : 'auth.welcome.new';
+    const subKey = isReset ? 'auth.reset.sub' : isLogin ? 'auth.login.sub' : 'auth.register.sub';
+    modalTitle.setAttribute('data-i18n', titleKey);
+    modalTitle.textContent = t2(titleKey, isReset ? '重置密码' : isLogin ? '欢迎回来' : '创建账户');
+    modalSub.setAttribute('data-i18n', subKey);
+    modalSub.textContent = t2(subKey, isReset ? '通过邮箱验证码重置你的账户密码' : isLogin ? '登录你的账户以继续' : '注册一个新账户开始使用');
+    nameField.style.display = isReset ? 'none' : 'block';
+    emailField.style.display = (isLogin && !isReset) ? 'none' : 'block';
+    codeField.style.display = (isLogin && !isReset) ? 'none' : 'block';
     emailInput.required = !isLogin;
     codeInput.required = !isLogin;
-    submitBtn.textContent = isLogin ? t2('auth.submit.login', '登录') : t2('auth.submit.register', '注册');
+    passwordInput.required = isLogin || isRegister;
+    const pwLabel = passwordField.querySelector('label');
+    if (pwLabel) {
+      pwLabel.setAttribute('data-i18n', isReset ? 'auth.reset.newPassword' : 'auth.password');
+      pwLabel.textContent = t2(isReset ? 'auth.reset.newPassword' : 'auth.password', isReset ? '新密码' : '密码');
+    }
+    passwordInput.setAttribute('data-i18n-placeholder', isReset ? 'auth.reset.newPassword.placeholder' : 'auth.passwordPlaceholder');
+    passwordInput.placeholder = t2(isReset ? 'auth.reset.newPassword.placeholder' : 'auth.passwordPlaceholder', isReset ? '至少 8 位密码' : '至少 8 位密码');
+    const submitKey = isReset ? 'auth.reset.submit' : isLogin ? 'auth.submit.login' : 'auth.submit.register';
+    submitBtn.setAttribute('data-i18n', submitKey);
+    submitBtn.textContent = t2(submitKey, isReset ? '重置密码' : isLogin ? '登录' : '注册');
+    passwordInput.autocomplete = isLogin ? 'current-password' : 'new-password';
     showMessage('');
-    altText.innerHTML = isLogin
-      ? `${t2('auth.noAccount', '还没有账号？')}<a id="switchLink">${t2('auth.goRegister', '立即注册')}</a>`
-      : `${t2('auth.hasAccount', '已有账号？')}<a id="switchLink">${t2('auth.goLogin', '返回登录')}</a>`;
-    document.getElementById('switchLink').addEventListener('click', () => {
-      openModal(mode === 'login' ? 'register' : 'login');
-    });
+    [usernameInput, emailInput, codeInput, passwordInput].forEach(el => fieldError(el, false));
+    if (isReset) {
+      altText.innerHTML = `<a id="switchLink" data-i18n="auth.reset.back">${t2('auth.reset.back', '返回登录')}</a>`;
+      document.getElementById('switchLink').addEventListener('click', () => openModal('login'));
+    } else {
+      altText.innerHTML = isLogin
+        ? `<span data-i18n="auth.noAccount">${t2('auth.noAccount', '还没有账号？')}</span><a id="switchLink" data-i18n="auth.goRegister">${t2('auth.goRegister', '立即注册')}</a>`
+        : `<span data-i18n="auth.hasAccount">${t2('auth.hasAccount', '已有账号？')}</span><a id="switchLink" data-i18n="auth.goLogin">${t2('auth.goLogin', '返回登录')}</a>`;
+      document.getElementById('switchLink').addEventListener('click', () => {
+        openModal(mode === 'login' ? 'register' : 'login');
+      });
+    }
+    forgotLinkWrap.style.display = isLogin ? 'block' : 'none';
+    renderResendCountdown();
+    if (window.apeI18n) window.apeI18n.applyI18n(modal);
   }
   navLoginBtn?.addEventListener('click', () => openModal('login'));
   heroLoginBtn?.addEventListener('click', () => openModal('login'));
@@ -1032,73 +1072,81 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
   tabLogin.addEventListener('click', () => { mode='login'; updateMode(); });
   tabRegister.addEventListener('click', () => { mode='register'; updateMode(); });
   switchLink.addEventListener('click', () => openModal('register'));
+  forgotLink?.addEventListener('click', () => { mode = 'reset'; updateMode(); });
   let resendTimer = null;
   let codeSentEmail = sessionStorage.getItem('apehub_code_email') || '';
-  const resendStorageKey = email => `apehub_register_code:${email.toLowerCase()}`;
-  const resendRemaining = email => {
+  const resendStorageKey = (email, purpose = 'register') => `apehub_${purpose}_code:${email.toLowerCase()}`;
+  const resendRemaining = (email, purpose = 'register') => {
     if (!email) return 0;
-    const expiresAt = Number(localStorage.getItem(resendStorageKey(email)) || 0);
+    const expiresAt = Number(localStorage.getItem(resendStorageKey(email, purpose)) || 0);
     const remaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
-    if (!remaining) localStorage.removeItem(resendStorageKey(email));
+    if (!remaining) localStorage.removeItem(resendStorageKey(email, purpose));
     return remaining;
   };
   const renderResendCountdown = () => {
-    if (!sendCodeBtn || mode !== 'register') return;
-    const remaining = resendRemaining(emailInput.value.trim());
+    if (!sendCodeBtn || mode === 'login') return;
+    const purpose = mode === 'register' ? 'register' : 'reset';
+    const remaining = resendRemaining(emailInput.value.trim(), purpose);
     if (remaining > 0) {
       sendCodeBtn.disabled = true;
-      sendCodeBtn.textContent = `${remaining} 秒后重发`;
+      sendCodeBtn.textContent = fmt('auth.resend.countdown', '{seconds} 秒后重发', { seconds: remaining });
     } else if (!sendCodeBtn.dataset.sending) {
       sendCodeBtn.disabled = false;
-      sendCodeBtn.textContent = '发送验证码';
+      sendCodeBtn.textContent = t2('auth.getCode', '发送验证码');
     }
     if (resendTimer) clearTimeout(resendTimer);
     if (remaining > 0) resendTimer = setTimeout(renderResendCountdown, 1000);
   };
-  const startResendCountdown = (email, seconds) => {
-    localStorage.setItem(resendStorageKey(email), String(Date.now() + Number(seconds || 60) * 1000));
+  const startResendCountdown = (email, seconds, purpose = 'register') => {
+    localStorage.setItem(resendStorageKey(email, purpose), String(Date.now() + Number(seconds || 60) * 1000));
     renderResendCountdown();
   };
   emailInput.addEventListener('input', () => {
     const email = emailInput.value.trim().toLowerCase();
     renderResendCountdown();
     if (codeSentEmail && email && email !== codeSentEmail) {
-      showMessage('邮箱已变更，请使用发送验证码的邮箱，或重新发送验证码', true);
+      showMessage(t2('auth.email.changed', '邮箱已变更，请使用发送验证码的邮箱，或重新发送验证码'), true);
     }
   });
   updateMode = ((originalUpdateMode) => (...args) => { originalUpdateMode(...args); renderResendCountdown(); })(updateMode);
   sendCodeBtn?.addEventListener('click', async () => {
     const email = emailInput.value.trim();
     if (!email) {
-      showMessage('请先填写邮箱地址', true);
+      showMessage(t2('auth.email.required', '请先填写邮箱地址'), true);
+      fieldError(emailInput, true); emailInput.focus();
       return;
     }
-    const remaining = resendRemaining(email);
+    fieldError(emailInput, false);
+    const purpose = mode === 'register' ? 'register' : 'reset';
+    const remaining = resendRemaining(email, purpose);
     if (remaining > 0) {
       renderResendCountdown();
-      showMessage(`请等待 ${remaining} 秒后再重新发送`, true);
+      showMessage(fmt('auth.sendCode.rate', '请等待 {seconds} 秒后再重新发送', { seconds: remaining }), true);
       return;
     }
     sendCodeBtn.disabled = true;
     sendCodeBtn.dataset.sending = '1';
-    sendCodeBtn.textContent = '发送中...';
-    showMessage('正在发送验证码，请稍候');
+    sendCodeBtn.textContent = t2('auth.sendCode.sending', '发送中...');
+    showMessage('');
     try {
-      const data = await apiRequest('/apehub-web/site/auth/register/code', {
+      const path = purpose === 'register'
+        ? '/apehub-web/site/auth/register/code'
+        : '/apehub-web/site/auth/reset/code';
+      const data = await apiRequest(path, {
         method: 'POST', body: JSON.stringify({ email }),
       });
-      showMessage(`验证码已发送至 ${email}，请查收邮箱`);
+      showMessage(fmt('auth.sendCode.success', '验证码已发送至 {email}，请查收邮箱（含垃圾箱），5 分钟内有效', { email }));
       codeSentEmail = email;
       sessionStorage.setItem('apehub_code_email', email);
       delete sendCodeBtn.dataset.sending;
-      startResendCountdown(email, data.resend_in || 60);
+      startResendCountdown(email, data.resend_in || 60, purpose);
     } catch (error) {
       delete sendCodeBtn.dataset.sending;
       sendCodeBtn.disabled = false;
-      sendCodeBtn.textContent = '发送验证码';
+      sendCodeBtn.textContent = t2('auth.getCode', '发送验证码');
       showMessage(error.message, true);
       const retryMatch = String(error.message || '').match(/(\d+)\s*秒/);
-      if (retryMatch) startResendCountdown(email, Number(retryMatch[1]));
+      if (retryMatch) startResendCountdown(email, Number(retryMatch[1]), purpose);
     }
   });
   document.getElementById('authForm').addEventListener('submit', async e => {
@@ -1108,60 +1156,100 @@ npm run dev   <span class="c-c"># http://localhost:5173</span>
     const email = emailInput.value.trim();
     const code = codeInput.value.trim();
     [usernameInput, emailInput, codeInput, passwordInput].forEach(el => fieldError(el, false));
-    if (!username || username.length < 3) {
-      showMessage('用户名至少 3 个字符', true);
-      fieldError(usernameInput, true); usernameInput.focus();
-      return;
-    }
-    if (password.length < 8) {
-      showMessage('密码至少 8 位', true);
-      fieldError(passwordInput, true); passwordInput.focus();
-      return;
-    }
-    if (mode === 'register') {
+    if (mode === 'login' || mode === 'register') {
+      if (mode === 'register') {
+        if (!email) {
+          showMessage(t2('auth.email.required', '请填写邮箱地址'), true);
+          fieldError(emailInput, true); emailInput.focus();
+          return;
+        }
+        if (!code || !/^\d{6}$/.test(code)) {
+          showMessage(t2('auth.code.invalid', '请输入 6 位数字验证码'), true);
+          fieldError(codeInput, true); codeInput.focus();
+          return;
+        }
+        if (codeSentEmail && email.toLowerCase() !== codeSentEmail) {
+          showMessage(t2('auth.email.changed', '邮箱已变更，请使用发送验证码的邮箱，或重新发送验证码'), true);
+          fieldError(emailInput, true);
+          return;
+        }
+      } else {
+        if (!username || username.length < 3) {
+          showMessage(t2('auth.username.short', '用户名至少 3 个字符'), true);
+          fieldError(usernameInput, true); usernameInput.focus();
+          return;
+        }
+      }
+      if (password.length < 8) {
+        showMessage(t2('auth.password.short', '密码至少 8 位'), true);
+        fieldError(passwordInput, true); passwordInput.focus();
+        return;
+      }
+    } else if (mode === 'reset') {
       if (!email) {
-        showMessage('请填写邮箱地址', true);
+        showMessage(t2('auth.email.required', '请填写邮箱地址'), true);
         fieldError(emailInput, true); emailInput.focus();
         return;
       }
       if (!code || !/^\d{6}$/.test(code)) {
-        showMessage('请输入 6 位数字验证码', true);
+        showMessage(t2('auth.code.invalid', '请输入 6 位数字验证码'), true);
         fieldError(codeInput, true); codeInput.focus();
         return;
       }
+      if (password.length < 8) {
+        showMessage(t2('auth.password.short', '密码至少 8 位'), true);
+        fieldError(passwordInput, true); passwordInput.focus();
+        return;
+      }
       if (codeSentEmail && email.toLowerCase() !== codeSentEmail) {
-        showMessage('邮箱已变更，请使用发送验证码的邮箱，或重新发送验证码', true);
+        showMessage(t2('auth.email.changed', '邮箱已变更，请使用发送验证码的邮箱，或重新发送验证码'), true);
         fieldError(emailInput, true);
         return;
       }
     }
     submitBtn.disabled = true;
-    submitBtn.textContent = mode === 'login' ? '登录中...' : '注册中...';
+    submitBtn.dataset.loading = '1';
+    submitBtn.textContent = mode === 'login' ? t2('auth.login.loading', '登录中...')
+      : mode === 'register' ? t2('auth.register.loading', '注册中...')
+      : t2('auth.reset.loading', '重置中...');
     try {
-      const data = mode === 'login'
-        ? await apiRequest('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) })
-        : await apiRequest('/apehub-web/site/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({
-              username,
-              password,
-              email,
-              verification_code: code,
-            }),
-          });
+      let data;
+      if (mode === 'login') {
+        data = await apiRequest('/auth/login', { method: 'POST', body: JSON.stringify({ username, password, source: 'site' }) });
+      } else if (mode === 'register') {
+        data = await apiRequest('/apehub-web/site/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({ username, password, email, verification_code: code }),
+        });
+      } else {
+        data = await apiRequest('/apehub-web/site/auth/reset-password', {
+          method: 'POST',
+          body: JSON.stringify({ email, verification_code: code, new_password: password }),
+        });
+      }
+      if (mode === 'reset') {
+        showMessage(t2('auth.reset.success', '密码已重置，请使用新密码登录'), false);
+        setTimeout(() => { mode = 'login'; updateMode(); }, 1500);
+        return;
+      }
       localStorage.setItem('access_token', data.access_token);
       if (data.refresh_token) localStorage.setItem('refresh_token', data.refresh_token);
       window.location.assign('/apehub-web/profile.html');
     } catch (error) {
       showMessage(error.message, true);
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = mode === 'login' ? '登录' : '注册';
+      delete submitBtn.dataset.loading;
+      if (mode !== 'reset') {
+        submitBtn.disabled = false;
+        const submitKey = mode === 'login' ? 'auth.submit.login' : 'auth.submit.register';
+        submitBtn.setAttribute('data-i18n', submitKey);
+        submitBtn.textContent = t2(submitKey, mode === 'login' ? '登录' : '注册');
+      }
     }
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
-<script src="/apehub-web/i18n.js?v=1.2.0"></script>
+<script src="/apehub-web/i18n.js?v=1.3.0"></script>
 <script src="/apehub-web/site-runtime.js?v=2.3.0"></script>
 </body>
 </html>

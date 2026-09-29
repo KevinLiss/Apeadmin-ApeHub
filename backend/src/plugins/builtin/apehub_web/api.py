@@ -3353,14 +3353,14 @@ class SendEmailCodeIn(BaseModel):
 
 
 async def _consume_registration_code(
-    db: AsyncSession, email: str, code: str
+    db: AsyncSession, email: str, code: str, purpose: str = "register"
 ) -> None:
-    """Validate and consume a one-time registration code."""
+    """Validate and consume a one-time email verification code."""
     record = (
         await db.execute(
             select(ApehubWebEmailVerification).where(
                 ApehubWebEmailVerification.email == email.lower(),
-                ApehubWebEmailVerification.purpose == "register",
+                ApehubWebEmailVerification.purpose == purpose,
             )
         )
     ).scalar_one_or_none()
@@ -3373,7 +3373,7 @@ async def _consume_registration_code(
         raise ValidationException("验证码已过期，请重新获取")
     if record.attempts >= services.MAX_CODE_ATTEMPTS:
         raise ValidationException("验证码尝试次数过多，请重新获取")
-    if not services.verification_code_matches(email, code, record.code_hash):
+    if not services.verification_code_matches(email, code, record.code_hash, purpose):
         record.attempts += 1
         await db.commit()
         raise ValidationException("验证码错误")
@@ -3381,14 +3381,19 @@ async def _consume_registration_code(
     await db.commit()
 
 
-@router.post("/site/auth/register/code")
-async def send_registration_code(
-    body: SendEmailCodeIn,
+async def _send_verification_code(
     request: Request,
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    """Issue and deliver a QQ SMTP-backed code for account registration."""
-    email = body.email.strip().lower()
+    db: AsyncSession,
+    email: str,
+    purpose: str,
+    send_fn,
+    label: str,
+) -> dict:
+    """Shared logic for issuing an email verification code (register/reset).
+
+    ``send_fn(smtp_config, email, code)`` performs the actual delivery.
+    """
+    email = email.strip().lower()
     if not services.is_valid_email(email):
         raise ValidationException("请输入有效的邮箱")
 
@@ -3409,7 +3414,7 @@ async def send_registration_code(
         await db.execute(
             select(ApehubWebEmailVerification).where(
                 ApehubWebEmailVerification.email == email,
-                ApehubWebEmailVerification.purpose == "register",
+                ApehubWebEmailVerification.purpose == purpose,
             )
         )
     ).scalar_one_or_none()
@@ -3419,9 +3424,9 @@ async def send_registration_code(
 
     code = services.generate_code()
     if record is None:
-        record = ApehubWebEmailVerification(email=email, purpose="register", code_hash="")
+        record = ApehubWebEmailVerification(email=email, purpose=purpose, code_hash="")
         db.add(record)
-    record.code_hash = services.hash_verification_code(email, code)
+    record.code_hash = services.hash_verification_code(email, code, purpose)
     record.request_ip = client_ip
     record.sent_at = now
     record.expires_at = now + timedelta(seconds=services.CODE_TTL)
@@ -3431,12 +3436,25 @@ async def send_registration_code(
     config = await _get_site_config(db)
     smtp_config = _smtp_config(config)
     try:
-        await asyncio.to_thread(services.send_registration_code, smtp_config, email, code)
+        await asyncio.to_thread(send, smtp_config, email, code)
     except Exception as exc:
         await db.rollback()
-        raise ValidationException("验证码发送失败，请确认邮件服务配置后重试") from exc
+        raise ValidationException(f"{label}发送失败，请确认邮件服务配置后重试") from exc
     await db.commit()
-    return success_response(data={"expires_in": services.CODE_TTL, "resend_in": services.RESEND_INTERVAL}, msg="验证码已发送")
+    return {"expires_in": services.CODE_TTL, "resend_in": services.RESEND_INTERVAL}
+
+
+@router.post("/site/auth/register/code")
+async def send_registration_code(
+    body: SendEmailCodeIn,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Issue and deliver a QQ SMTP-backed code for account registration."""
+    data = await _send_verification_code(
+        request, db, body.email, "register", services.send_registration_code, "验证码"
+    )
+    return success_response(data=data, msg="验证码已发送")
 
 
 @router.post("/site/auth/register")
@@ -3468,6 +3486,55 @@ async def site_register(
         "token_type": "bearer",
         "user": {"id": user.id, "username": user.username, "nickname": user.nickname, "email": user.email},
     }, msg="注册成功")
+
+
+class ResetPasswordIn(BaseModel):
+    """Reset password using an email verification code."""
+
+    email: str = Field(max_length=100)
+    verification_code: str = Field(pattern=r"^\d{6}$")
+    new_password: str = Field(min_length=8, max_length=100)
+
+
+@router.post("/site/auth/reset/code")
+async def send_reset_password_code(
+    body: SendEmailCodeIn,
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Issue an email verification code for resetting the password.
+
+    Returns the same envelope as register/code so the client can share the
+    resend-countdown logic. The email must map to an existing account,
+    otherwise a generic message is returned (no account enumeration).
+    """
+    email = body.email.strip().lower()
+    user = (
+        await db.execute(select(User).where(User.email == email))
+    ).scalar_one_or_none()
+    if user is None:
+        raise ValidationException("该邮箱未注册")
+    data = await _send_verification_code(
+        request, db, email, "reset", services.send_reset_code, "验证码"
+    )
+    return success_response(data=data, msg="验证码已发送")
+
+
+@router.post("/site/auth/reset-password")
+async def reset_password(
+    body: ResetPasswordIn,
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Verify the reset code and update the user's password."""
+    email = body.email.strip().lower()
+    user = (
+        await db.execute(select(User).where(User.email == email))
+    ).scalar_one_or_none()
+    if user is None:
+        raise ValidationException("该邮箱未注册")
+    await _consume_registration_code(db, email, body.verification_code, purpose="reset")
+    await crud_user.update_password(db, user.id, body.new_password)
+    return success_response(msg="密码已重置，请使用新密码登录")
 
 
 @router.get("/profile")

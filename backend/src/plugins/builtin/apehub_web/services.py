@@ -39,14 +39,22 @@ def generate_code() -> str:
     return "".join(secrets.choice("0123456789") for _ in range(6))
 
 
-def hash_verification_code(email: str, code: str) -> str:
-    """Return a keyed digest so email codes are never persisted in plaintext."""
-    payload = f"register:{email.strip().lower()}:{code.strip()}".encode("utf-8")
+def hash_verification_code(email: str, code: str, purpose: str = "register") -> str:
+    """Return a keyed digest so email codes are never persisted in plaintext.
+
+    ``purpose`` is mixed into the digest so a code issued for one flow
+    (e.g. register) can never be replayed for another (e.g. reset).
+    """
+    payload = f"{purpose}:{email.strip().lower()}:{code.strip()}".encode("utf-8")
     return hmac.new(settings.JWT_SECRET.encode("utf-8"), payload, hashlib.sha256).hexdigest()
 
 
-def verification_code_matches(email: str, code: str, expected_hash: str) -> bool:
-    return hmac.compare_digest(hash_verification_code(email, code), expected_hash)
+def verification_code_matches(
+    email: str, code: str, expected_hash: str, purpose: str = "register"
+) -> bool:
+    return hmac.compare_digest(
+        hash_verification_code(email, code, purpose), expected_hash
+    )
 
 
 def _send_smtp(cfg: dict[str, Any], to_addr: str, subject: str, body: str) -> None:
@@ -76,6 +84,19 @@ def send_registration_code(cfg: dict[str, Any], email: str, code: str) -> None:
     body = (
         "亲爱的用户：\n\n"
         f"您正在使用 ApeHub 服务，本次验证码为：{code}\n\n"
+        f"验证码 {CODE_TTL // 60} 分钟内有效，请勿泄露给他人。\n"
+        "如非本人操作，请忽略本邮件。\n\n"
+        "—— ApeHub 团队"
+    )
+    _send_smtp(cfg, email, subject, body)
+
+
+def send_reset_code(cfg: dict[str, Any], email: str, code: str) -> None:
+    """Send a password-reset verification code through configured SMTP."""
+    subject = "ApeHub 重置密码验证码"
+    body = (
+        "亲爱的用户：\n\n"
+        f"您正在重置 ApeHub 账户密码，本次验证码为：{code}\n\n"
         f"验证码 {CODE_TTL // 60} 分钟内有效，请勿泄露给他人。\n"
         "如非本人操作，请忽略本邮件。\n\n"
         "—— ApeHub 团队"

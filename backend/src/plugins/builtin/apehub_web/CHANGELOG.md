@@ -3,15 +3,27 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '841f3adf-af79-4145-a751-bcceeafee1b8'
-  PropagateID: '841f3adf-af79-4145-a751-bcceeafee1b8'
-  ReservedCode1: 'eba0723d-6923-4926-84be-9fbe6fec38af'
-  ReservedCode2: 'eba0723d-6923-4926-84be-9fbe6fec38af'
+  ProduceID: '75534c16-ba7d-4523-90f0-67768dbc9a25'
+  PropagateID: '75534c16-ba7d-4523-90f0-67768dbc9a25'
+  ReservedCode1: '71028afa-fdd3-4cef-8bfa-50b8f318c80f'
+  ReservedCode2: '71028afa-fdd3-4cef-8bfa-50b8f318c80f'
 ---
 
 # Changelog
 
 All notable changes to the ApeHub Web plugin are documented here.
+
+## [1.21.0] — 2026-09-29
+
+### Added
+- 新增登录弹窗「找回密码」功能（邮箱 + 验证码 + 新密码）：
+  - 后端新增 `POST /apehub-web/site/auth/reset/code`（发送重置验证码，邮箱须已注册）与 `POST /apehub-web/site/auth/reset-password`（校验验证码并更新密码）
+  - 验证码哈希按 purpose（register/reset）区分，防止验证码跨流程重放
+  - 登录表单新增「忘记密码？」入口，重置成功后自动返回登录；覆盖 auth-shell.js（首页/插件市场/详情/下载复用）与首页内联弹窗
+- 补齐 i18n 缺失的 auth.* 词条（register/username/email/code/password/getCode/submit.register 等）及找回密码全套中英文词条
+
+### Fixed
+- 中文界面注册弹窗字段标签与按钮显示 `auth.xxx` 原文：i18n.js 词条缺失导致 `t()` 回退返回 key，已全部补齐
 
 ## [1.20.0] — 2026-09-28
 
