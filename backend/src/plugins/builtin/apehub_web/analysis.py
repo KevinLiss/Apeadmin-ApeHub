@@ -23,6 +23,8 @@ MAX_PROMPT_CHARS = 180_000
 TEXT_EXTENSIONS = {
     ".py", ".ts", ".tsx", ".js", ".jsx", ".vue", ".json", ".md", ".toml",
     ".yaml", ".yml", ".ini", ".cfg", ".sql", ".css", ".scss", ".html", ".txt",
+    ".go", ".rs", ".java", ".kt", ".php", ".rb", ".sh", ".bat", ".ps1",
+    ".proto", ".graphql", ".env.example", "dockerfile", "makefile",
 }
 IGNORED_PARTS = {
     ".git", ".idea", ".vscode", "node_modules", "dist", "build", "coverage",
@@ -151,9 +153,16 @@ def inspect_package(package_path: Path) -> dict[str, Any]:
 def _documentation_prompt(report: dict[str, Any]) -> list[dict[str, str]]:
     system = (
         "你是 ApeAdmin/FastAPI 插件审核与技术文档专家。只根据提供的文件内容分析，"
-        "不得编造不存在的接口。输出严格 JSON，包含 summary、features、architecture、"
-        "installation、configuration、permissions、api、database、security、documentation_markdown。"
-        "documentation_markdown 必须是完整中文 Markdown，适合直接进入 VitePress。"
+        "不得编造不存在的接口。\n"
+        "输出严格 JSON（不要 markdown 代码块包裹），各字段要求：\n"
+        "- summary：字符串，150-300 字的插件功能与定位概述，必填\n"
+        "- features：字符串数组，5-12 条核心功能特性，每条一句话，必填且不可为空数组\n"
+        "- architecture：字符串，技术架构与目录结构说明，必填\n"
+        "- installation/configuration/permissions/api/database/security："
+        "按实际情况填写（无则简述缺失）\n"
+        "- documentation_markdown：完整中文 Markdown 技术文档，适合直接进入 VitePress\n"
+        "如果提供的 source 为空或缺少代码，也要基于 manifest 与 file_tree 尽力填写"
+        "上述全部字段，不得返回空字符串、空数组或「请提供内容」之类的应答。"
     )
     payload = {
         "manifest": report["manifest"],
@@ -226,11 +235,56 @@ async def generate_documentation(
         result = json.loads(content)
     except json.JSONDecodeError as exc:
         raise RuntimeError("AI 服务未返回有效 JSON") from exc
+    result = _normalize_ai_result(result)
     usage = payload.get("usage") or {}
     return result, {
         "prompt_tokens": int(usage.get("prompt_tokens") or 0),
         "completion_tokens": int(usage.get("completion_tokens") or 0),
     }
+
+
+def _normalize_ai_result(result: dict[str, Any]) -> dict[str, Any]:
+    """Normalize AI output so the frontend never gets an empty report.
+
+    AI models occasionally dump everything into documentation_markdown while
+    leaving summary/features/architecture blank. When that happens, derive a
+    summary from the markdown so the review UI always shows textual analysis.
+    """
+    if not isinstance(result, dict):
+        raise RuntimeError("AI 服务返回了非对象 JSON")
+    md = str(result.get("documentation_markdown") or "").strip()
+    if md and not str(result.get("summary") or "").strip():
+        # 取 markdown 首个非标题段落作为概述兜底
+        for line in md.splitlines():
+            if line.strip().startswith("#"):
+                continue
+            text = line.strip()
+            if text and not text.startswith(("```", "---", "|", "- ", "* ")) and len(text) > 20:
+                result["summary"] = text[:300]
+                break
+    if not result.get("features"):
+        # 从 markdown 列表项提取功能特性兜底（最多 10 条）
+        feats: list[str] = []
+        for line in md.splitlines():
+            stripped = line.strip()
+            if stripped.startswith(("- ", "* ", "•")):
+                item = stripped.lstrip("-*• ").strip()
+                if 5 < len(item) <= 120:
+                    feats.append(item)
+            if len(feats) >= 10:
+                break
+        if feats:
+            result["features"] = feats
+    if md and not str(result.get("architecture") or "").strip():
+        for heading in ("架构", "目录结构", "结构", "技术栈"):
+            idx = md.find(heading)
+            if idx >= 0:
+                snippet = md[idx:idx + 300].splitlines()
+                result["architecture"] = " ".join(
+                    ln.strip().lstrip("#-|* ").strip() for ln in snippet[1:4] if ln.strip()
+                )[:300]
+                break
+    return result
 
 
 def _changelog_optimize_prompt(raw_text: str) -> list[dict[str, str]]:
@@ -532,13 +586,15 @@ async def generate_documentation_coze(
         markdown_text = re.sub(r"^```[a-zA-Z]*\n?", "", markdown_text)
         markdown_text = re.sub(r"\n?```$", "", markdown_text)
         markdown_text = markdown_text.strip()
-    # Wrap into the compatibility structure expected by the analysis job
+    # Wrap into the compatibility structure expected by the analysis job.
+    # Coze 工作流只返回 markdown 文本，结构化字段由 _normalize_ai_result 兜底提取。
     result: dict[str, Any] = {
         "summary": "",
         "features": [],
         "architecture": "",
         "documentation_markdown": markdown_text,
     }
+    result = _normalize_ai_result(result)
     usage = {"prompt_tokens": 0, "completion_tokens": 0}
     return result, usage
 
