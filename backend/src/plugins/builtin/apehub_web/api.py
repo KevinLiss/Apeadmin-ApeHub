@@ -284,24 +284,80 @@ async def _owned_version(
     return plugin, version
 
 
-async def _ai_provider_config(db: AsyncSession) -> tuple[str, str, str]:
-    """Resolve AI provider (base_url, model, api_key) from site config.
+async def _global_ai_provider_fallback(db: AsyncSession) -> tuple[str, str, str] | None:
+    """Fallback to the base model-key management (ai_provider table) when the
+    site-specific AI config has no API key. Returns (base_url, model, api_key)
+    or None when no enabled provider exists.
+    """
+    from src.crud.ai import crud_ai_provider
 
-    For coze provider this returns (COZE_API_URL, workflow_id, api_key)
-    so callers can distinguish by provider type.
+    provider = await crud_ai_provider.get_first_enabled(db)
+    if provider is None:
+        return None
+    from src.ai.agent import PROVIDER_DEFAULTS
+
+    defaults = PROVIDER_DEFAULTS.get(provider.provider_type, PROVIDER_DEFAULTS["custom"])
+    base_url = provider.base_url or defaults["base_url"]
+    return base_url, defaults["default_model"], _decrypt_secret(provider.api_key_enc)
+
+
+async def _has_global_ai_provider(db: AsyncSession) -> bool:
+    """True when the global model-key management has at least one enabled provider."""
+    from src.crud.ai import crud_ai_provider
+
+    return await crud_ai_provider.get_first_enabled(db) is not None
+
+
+async def _resolve_ai_provider(db: AsyncSession) -> tuple[str, str, str]:
+    """Resolve AI provider (base_url, model, api_key) with fallback.
+
+    Order: site config (coze/qwen/deepseek) -> global model-key management
+    (ai_provider table). Raises when neither has a usable key so the message
+    always points to the place the user can actually fix it.
     """
     cfg = await _get_site_config(db)
     if cfg.ai_provider == "coze":
-        if not cfg.coze_api_key_enc:
-            raise ValidationException("请先在官网配置中设置 Coze API Key")
-        return "https://api.coze.cn/v1/workflow/run", cfg.coze_workflow_id, _decrypt_secret(cfg.coze_api_key_enc)
-    if cfg.ai_provider == "qwen":
-        if not cfg.qwen_api_key_enc:
-            raise ValidationException("请先在官网配置中设置千问（Qwen）API Key")
-        return cfg.qwen_base_url, cfg.qwen_model, _decrypt_secret(cfg.qwen_api_key_enc)
-    if not cfg.deepseek_api_key_enc:
-        raise ValidationException("请先在官网配置中设置 DeepSeek API Key")
-    return cfg.deepseek_base_url, cfg.deepseek_model, _decrypt_secret(cfg.deepseek_api_key_enc)
+        if cfg.coze_api_key_enc:
+            return "https://api.coze.cn/v1/workflow/run", cfg.coze_workflow_id, _decrypt_secret(cfg.coze_api_key_enc)
+    elif cfg.ai_provider == "qwen":
+        if cfg.qwen_api_key_enc:
+            return cfg.qwen_base_url, cfg.qwen_model, _decrypt_secret(cfg.qwen_api_key_enc)
+    elif cfg.deepseek_api_key_enc:
+        return cfg.deepseek_base_url, cfg.deepseek_model, _decrypt_secret(cfg.deepseek_api_key_enc)
+
+    fallback = await _global_ai_provider_fallback(db)
+    if fallback is not None:
+        return fallback
+    raise ValidationException("未配置任何可用的 AI 模型，请先在官网配置或「模型密钥管理」中设置 API Key")
+
+
+async def _site_ai_job_model(cfg: ApehubWebSiteConfig, db: AsyncSession) -> str | None:
+    """Return the model name to record on an analysis job, or None when neither
+    the site config nor the global model-key management has a usable key.
+    Mirrors the resolution order of `_resolve_ai_provider`.
+    """
+    if cfg.ai_provider == "qwen" and cfg.qwen_api_key_enc:
+        return cfg.qwen_model
+    if cfg.ai_provider == "coze" and cfg.coze_api_key_enc:
+        return cfg.coze_workflow_id
+    if cfg.deepseek_api_key_enc:
+        return cfg.deepseek_model
+    from src.crud.ai import crud_ai_provider
+
+    provider = await crud_ai_provider.get_first_enabled(db)
+    if provider is None:
+        return None
+    from src.ai.agent import PROVIDER_DEFAULTS
+
+    defaults = PROVIDER_DEFAULTS.get(provider.provider_type, PROVIDER_DEFAULTS["custom"])
+    return defaults["default_model"]
+
+
+async def _ai_provider_config(db: AsyncSession) -> tuple[str, str, str]:
+    """Deprecated thin wrapper kept for compatibility: delegates to
+    `_resolve_ai_provider` which adds the global model-key fallback.
+    """
+    return await _resolve_ai_provider(db)
 
 
 async def _package_report(db: AsyncSession, version: ApehubWebPluginVersion) -> dict[str, Any]:
@@ -386,13 +442,13 @@ async def _run_analysis_job(job_id: int) -> None:
             await db.commit()
 
             cfg = await _get_site_config(db)
-            if cfg.ai_provider == "coze":
+            if cfg.ai_provider == "coze" and cfg.coze_api_key_enc:
                 result, usage = await generate_documentation_coze(
                     report,
                     api_key=_decrypt_secret(cfg.coze_api_key_enc),
                     workflow_id=cfg.coze_workflow_id,
                 )
-            elif cfg.ai_provider == "qwen":
+            elif cfg.ai_provider == "qwen" and cfg.qwen_api_key_enc:
                 provider_base_url = cfg.qwen_base_url
                 provider_model = cfg.qwen_model
                 provider_api_key = _decrypt_secret(cfg.qwen_api_key_enc)
@@ -402,10 +458,22 @@ async def _run_analysis_job(job_id: int) -> None:
                     base_url=provider_base_url,
                     model=provider_model,
                 )
-            else:
+            elif cfg.deepseek_api_key_enc:
                 provider_base_url = cfg.deepseek_base_url
                 provider_model = cfg.deepseek_model
                 provider_api_key = _decrypt_secret(cfg.deepseek_api_key_enc)
+                result, usage = await generate_documentation(
+                    report,
+                    api_key=provider_api_key,
+                    base_url=provider_base_url,
+                    model=provider_model,
+                )
+            else:
+                # 官网未配置 key，回退到全局模型密钥管理
+                fallback = await _global_ai_provider_fallback(db)
+                if fallback is None:
+                    raise RuntimeError("未配置任何可用的 AI 模型，请先在官网配置或「模型密钥管理」中设置 API Key")
+                provider_base_url, provider_model, provider_api_key = fallback
                 result, usage = await generate_documentation(
                     report,
                     api_key=provider_api_key,
@@ -753,9 +821,13 @@ async def get_site_config(
         "withdrawal_fee_value": cfg.withdrawal_fee_value,
         "mail_configured": bool(cfg.mail_code_enc),
         "lempay_configured": bool(cfg.lempay_key_enc and cfg.lempay_pid),
-        "deepseek_configured": bool(cfg.deepseek_api_key_enc),
+        "deepseek_configured": bool(
+            cfg.deepseek_api_key_enc
+            or (await _has_global_ai_provider(db))
+        ),
         "qwen_configured": bool(cfg.qwen_api_key_enc),
         "coze_configured": bool(cfg.coze_api_key_enc and cfg.coze_workflow_id),
+        "global_ai_provider_configured": bool(await _has_global_ai_provider(db)),
     })
 
 
@@ -1735,14 +1807,9 @@ async def analyze_plugin_version(
     if running:
         raise ConflictException("该版本正在分析")
     cfg = await _get_site_config(db)
-    if cfg.ai_provider == "qwen":
-        if not cfg.qwen_api_key_enc:
-            raise ValidationException("请先在官网配置中设置千问（Qwen）API Key")
-        job_model = cfg.qwen_model
-    else:
-        if not cfg.deepseek_api_key_enc:
-            raise ValidationException("请先在官网配置中设置 DeepSeek API Key")
-        job_model = cfg.deepseek_model
+    job_model = await _site_ai_job_model(cfg, db)
+    if job_model is None:
+        raise ValidationException("未配置任何可用的 AI 模型，请先在官网配置或「模型密钥管理」中设置 API Key")
     job = ApehubWebAnalysisJob(
         plugin_id=plugin_id,
         version_id=version.id,
@@ -1924,14 +1991,14 @@ async def generate_version_documentation(
     report = await _package_report(db, version)
     cfg = await _get_site_config(db)
     try:
-        if cfg.ai_provider == "coze":
+        if cfg.ai_provider == "coze" and cfg.coze_api_key_enc:
             generated = await generate_documentation_from_package_coze(
                 report,
                 api_key=_decrypt_secret(cfg.coze_api_key_enc),
                 workflow_id=cfg.coze_workflow_id,
             )
         else:
-            provider_base_url, provider_model, provider_api_key = await _ai_provider_config(db)
+            provider_base_url, provider_model, provider_api_key = await _resolve_ai_provider(db)
             generated = await generate_documentation_from_package(
                 report,
                 api_key=provider_api_key,
@@ -2263,14 +2330,9 @@ async def admin_analyze_plugin_version(
     if running:
         raise ConflictException("该版本正在分析，请稍候")
     cfg = await _get_site_config(db)
-    if cfg.ai_provider == "qwen":
-        if not cfg.qwen_api_key_enc:
-            raise ValidationException("请先在官网配置中设置千问（Qwen）API Key")
-        job_model = cfg.qwen_model
-    else:
-        if not cfg.deepseek_api_key_enc:
-            raise ValidationException("请先在官网配置中设置 DeepSeek API Key")
-        job_model = cfg.deepseek_model
+    job_model = await _site_ai_job_model(cfg, db)
+    if job_model is None:
+        raise ValidationException("未配置任何可用的 AI 模型，请先在官网配置或「模型密钥管理」中设置 API Key")
     job = ApehubWebAnalysisJob(
         plugin_id=plugin_id,
         version_id=version.id,
