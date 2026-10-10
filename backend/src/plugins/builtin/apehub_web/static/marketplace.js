@@ -78,7 +78,7 @@ function renderMarket() {
       const priceLabel = Number(item.price) > 0 ? marketPrice(item.price) : marketT('plugins.free');
       return `<article class="plugin-card" data-id="${item.id}">
         <div class="p-head"><div class="p-icon" style="background:rgba(52,211,153,.12)">${icon}</div><div><div class="p-name">${marketEsc(displayName)}<span class="lang-badge">${marketLang(item.language)}</span></div><div class="p-ver">v${marketEsc(item.version)}</div></div></div>
-        <div class="p-desc">${marketEsc(description || marketT('plugins.noDesc'))}</div>
+        <div class="p-desc" title="${marketEsc(description)}">${marketEsc(description || marketT('plugins.noDesc'))}</div>
         <div class="p-tags">${tagsRaw(tagList).join('')}</div>
         <div class="p-meta"><div class="p-stats"><span>${marketT('plugins.install')} ${Number(item.install_count || 0).toLocaleString()}</span><span>${marketT('plugins.download')} ${Number(item.download_count || 0).toLocaleString()}</span></div><div class="p-actions"><button class="install-btn">${marketEsc(priceLabel)}</button></div></div>
       </article>`;
